@@ -7,7 +7,7 @@ export interface HandleProps {
     bottom?: boolean;
     color?: string;
     Icon?: React.ComponentClass<any>;
-    innerRef: (input: HTMLElement) => any;
+    innerRef?: (input: HTMLElement) => any;
     left?: boolean;
     right?: boolean;
     rotate?: number;

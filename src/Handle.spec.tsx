@@ -1,5 +1,5 @@
-import * as React from 'react';
 import { shallow } from 'enzyme';
+import * as React from 'react';
 import ChevronLeft from 'react-icons/lib/md/chevron-left';
 
 import Handle from './Handle';
@@ -13,7 +13,6 @@ describe('Handle', () => {
                 color="white"
                 size={40}
                 rotate={30}
-                styleString="styleString"
             />
         );
 
