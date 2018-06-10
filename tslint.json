@@ -7,7 +7,9 @@
     ],
     "jsRules": {},
     "rules": {
-        "interface-name": false,
+        "interface-name": [true, "never-prefix"],
+        "no-implicit-dependencies": [true, "dev"],
+        "object-literal-key-quotes": [true, "consistent-as-needed"],
         "object-literal-sort-keys": false,
         "prettier": [
             true,
