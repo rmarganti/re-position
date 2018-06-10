@@ -1,20 +1,19 @@
 import { fromEvent, Observable } from 'rxjs';
 import { filter, map, skipWhile, switchMap } from 'rxjs/operators';
 
+import { Coordinates, CoordinatesStrings } from '../types';
+import { round } from '../utils';
 import { requestAnimationFramesUntil } from './requestAnimationFramesUntil';
-import { Coordinates, CoordinatesStrings } from './types';
-import { round } from './utils';
 
 /**
- * Create an Obvservable that enables drag-and-drop
+ * Create an Obvservable that enables moving an Element
  * and emits a stream of updated positions.
  *
- * @param element HTML Element for which to enable drag-and-drop
+ * @param element HTML Element for which to enable moving
  */
-export const createDndObservable = (
+export const createMoveObservable = (
     element: HTMLElement,
     onComplete?: () => void,
-    onStart?: () => void,
     shouldConvertToPercent: boolean = true
 ): Observable<CoordinatesStrings> => {
     const mouseDown$ = fromEvent(element, 'mousedown');
@@ -26,10 +25,6 @@ export const createDndObservable = (
         switchMap((e: MouseEvent) => {
             e.preventDefault();
             e.stopPropagation();
-
-            if (onStart) {
-                onStart();
-            }
 
             const move$ = mouseMove$.pipe(
                 map(distanceFromPointToMouseEvent(e.clientX, e.clientY)),

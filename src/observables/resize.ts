@@ -1,15 +1,12 @@
 import { fromEvent, Observable } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 
-import { requestAnimationFramesUntil } from './requestAnimationFramesUntil';
-
 import {
     AngleAndDistance,
     Dimensions,
     Position,
     PositionStrings,
-} from './types';
-
+} from '../types';
 import {
     angleBetweenPoints,
     distanceBetweenPoints,
@@ -18,14 +15,15 @@ import {
     round,
     transformMatrixOfElement,
     visualCoords,
-} from './utils';
+} from '../utils';
+import { requestAnimationFramesUntil } from './requestAnimationFramesUntil';
 
 /*
  * Create an Obvservable that enables resizing an HTML element
  * and emits a stream of updated size.
  *
  * @param element HTML Element for which to enable resizing
- * @param handle HTML Element of the draggable handle
+ * @param handle HTML Element of the movable handle
  */
 export const createResizeObservable = (
     element: HTMLElement,

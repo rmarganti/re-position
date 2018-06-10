@@ -1,16 +1,16 @@
 import { fromEvent, Observable } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 
+import { Rotation } from '../types';
+import { angleBetweenPoints, rotationOfElement, round } from '../utils';
 import { requestAnimationFramesUntil } from './requestAnimationFramesUntil';
-import { Rotation } from './types';
-import { angleBetweenPoints, rotationOfElement, round } from './utils';
 
 /**
  * Create an Obvservable that enables rotating an HTML element
  * and emits a stream of updated rotation.
  *
  * @param element HTML Element for which to enable rotatation.
- * @param handle HTML Element of the draggable handle
+ * @param handle HTML Element of the movable handle
  */
 export const createRotateObservable = (
     element: HTMLElement,
