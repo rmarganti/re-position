@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Handle renders correctly 1`] = `
+<styled.div
+  backgroundColor="red"
+  color="white"
+  rotate={30}
+  size={40}
+>
+  <MdChevronLeft />
+</styled.div>
+`;
