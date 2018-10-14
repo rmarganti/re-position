@@ -13,9 +13,9 @@ interface TransformBoxProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const Wrapper = styled.div`
-    position: absolute;
-    border: 1px dotted rgba(233, 30, 99, 0.5);
     box-sizing: border-box;
+    outline: 1px dotted rgba(233, 30, 99, 0.5);
+    position: absolute;
     z-index: 1000;
 `;
 
@@ -25,12 +25,14 @@ const TransformBox: React.SFC<TransformBoxProps> = ({
     refHandlers,
     resizable,
     rotatable,
+    style,
     ...rest
 }) => (
     <Wrapper
         {...rest}
         innerRef={refHandlers.container}
         style={{
+            ...style,
             height: `${position.height}`,
             left: `${position.left}`,
             position: 'absolute',

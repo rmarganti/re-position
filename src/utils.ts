@@ -193,17 +193,23 @@ export const scaleOfElement = (element: HTMLElement): number => {
  *
  * @param snapNumber grid gap
  */
-export const snapObjectValues = (snapTo: number) => <T extends {}>(
+export const snapObjectValues = (snapTo?: number) => <T extends {}>(
     input: T
 ): T => {
-    if (snapTo === 0) {
+    if (!snapTo) {
         return input;
     }
 
     return Object.keys(input).reduce(
         (carrier, key) => {
+            const inputValue = input[key];
+            const outputValue =
+                typeof inputValue === 'number'
+                    ? snapTo * Math.round(inputValue / snapTo)
+                    : inputValue;
+
             return Object.assign({}, carrier, {
-                [key]: snapTo * Math.round(input[key] / snapTo),
+                [key]: outputValue,
             });
         },
         {} as T

@@ -48,7 +48,7 @@ export const createResizeObservable = ({
     width = true,
     height = true,
     shouldConvertToPercent = true,
-    snap = 1,
+    snap,
 }: ResizeObservableOptions): Observable<PositionStrings> => {
     const mouseDown$ = fromEvent<MouseEvent>(handle, 'mousedown');
 

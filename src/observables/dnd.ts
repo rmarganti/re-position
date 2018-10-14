@@ -34,7 +34,7 @@ export const createDndObservable = ({
     element,
     onComplete,
     shouldConvertToPercent = true,
-    snap = 1,
+    snap,
 }: MoveObservableOptions): Observable<CoordinatesStrings> => {
     const mouseDown$ = fromEvent(element, 'mousedown');
 
