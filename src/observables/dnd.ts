@@ -1,5 +1,11 @@
 import { fromEvent, Observable } from 'rxjs';
-import { filter, map, skipWhile, switchMap } from 'rxjs/operators';
+import {
+    distinctUntilChanged,
+    filter,
+    map,
+    skipWhile,
+    switchMap,
+} from 'rxjs/operators';
 
 import { Coordinates, CoordinatesStrings } from '../types';
 import {
@@ -46,6 +52,7 @@ export const createDndObservable = ({
                 skipWhile(hasntMovedFivePixels),
                 map(addDistanceTo(element.offsetLeft, element.offsetTop)),
                 map(snapObjectValues(snap)),
+                distinctUntilChanged(),
                 map(
                     convertPositionToPercent(
                         shouldConvertToPercent,
@@ -70,10 +77,42 @@ const distanceFromPointToMouseEvent = (
     originX: number,
     originY: number,
     scale: number
-) => (e: MouseEvent): Coordinates => ({
-    left: (e.clientX - originX) / scale,
-    top: (e.clientY - originY) / scale,
-});
+) => (e: MouseEvent): Coordinates => {
+    const leftChange = (e.clientX - originX) / scale;
+    const topChange = (e.clientY - originY) / scale;
+
+    if (!e.shiftKey) {
+        return {
+            left: leftChange,
+            top: topChange,
+        };
+    }
+
+    const changeRatio = leftChange / topChange;
+    const absChangeRatio = Math.abs(changeRatio);
+
+    // Lock to diagonals
+    if (0.333 < absChangeRatio && absChangeRatio < 3) {
+        return {
+            left: leftChange,
+            top: topChange / leftChange > 0 ? leftChange : leftChange * -1,
+        };
+    }
+
+    // Lock to horizontal
+    if (Math.abs(leftChange) > Math.abs(topChange)) {
+        return {
+            left: leftChange,
+            top: 0,
+        };
+    }
+
+    // Lock to vertical
+    return {
+        left: 0,
+        top: topChange,
+    };
+};
 
 /**
  * Determine if the mouse has moved 5 pixels or more in any direction.

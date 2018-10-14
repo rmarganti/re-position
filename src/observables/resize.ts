@@ -1,5 +1,5 @@
 import { fromEvent, Observable } from 'rxjs';
-import { filter, map, switchMap } from 'rxjs/operators';
+import { distinctUntilChanged, filter, map, switchMap } from 'rxjs/operators';
 
 import {
     AngleAndDistance,
@@ -75,6 +75,7 @@ export const createResizeObservable = ({
                 map(applyToOriginalDimensions(oldPosition, width, height)),
                 map(limitToTwentyPxMinimum),
                 map(snapObjectValues(snap)),
+                distinctUntilChanged(),
                 map(
                     lockAspectRatio(
                         e.shiftKey,
