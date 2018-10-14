@@ -3,23 +3,31 @@ import { filter, map, switchMap } from 'rxjs/operators';
 
 import { Rotation } from '../types';
 import { angleBetweenPoints, rotationOfElement, round } from '../utils';
-import { requestAnimationFramesUntil } from './requestAnimationFramesUntil';
+import {
+    documentMouseMove$,
+    documentMouseUp$,
+    requestAnimationFramesUntil,
+} from './misc';
+
+interface RotateObservableOptions {
+    element: HTMLElement;
+    handle: HTMLElement;
+    onComplete: () => void;
+}
 
 /**
  * Create an Obvservable that enables rotating an HTML element
  * and emits a stream of updated rotation.
  *
- * @param element HTML Element for which to enable rotatation.
+ * @param element HTML Element for which to enable rotation.
  * @param handle HTML Element of the movable handle
  */
-export const createRotateObservable = (
-    element: HTMLElement,
-    handle: HTMLElement,
-    onComplete: () => void
-): Observable<Rotation> => {
+export const createRotateObservable = ({
+    element,
+    handle,
+    onComplete,
+}: RotateObservableOptions): Observable<Rotation> => {
     const mouseDown$ = fromEvent(handle, 'mousedown');
-    const mouseMove$ = fromEvent(document, 'mousemove');
-    const mouseUp$ = fromEvent(document, 'mouseup');
 
     return mouseDown$.pipe(
         filter((e: MouseEvent) => e.which === 1), // left clicks only
@@ -40,18 +48,24 @@ export const createRotateObservable = (
             const initialAngle =
                 angleFromAxis(e.clientX, e.clientY) - currentRotation;
 
-            const rotate$ = mouseMove$.pipe(
-                map(translateRotate(angleFromAxis, initialAngle))
+            const rotate$ = documentMouseMove$.pipe(
+                map(translateRotation(angleFromAxis, initialAngle))
             );
 
-            return requestAnimationFramesUntil(rotate$, mouseUp$, onComplete);
+            return requestAnimationFramesUntil(
+                rotate$,
+                documentMouseUp$,
+                onComplete
+            );
         })
     );
 };
 
-const translateRotate = (
+const translateRotation = (
     angleCalculator: (x: number, y: number) => number,
     initialAngle: number
 ) => (e: MouseEvent): Rotation => ({
-    rotate: `${round(angleCalculator(e.clientX, e.clientY) - initialAngle)}deg`,
+    rotation: `${round(
+        angleCalculator(e.clientX, e.clientY) - initialAngle
+    )}deg`,
 });

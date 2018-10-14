@@ -2,7 +2,7 @@ import * as React from 'react';
 import { MdChevronRight as Chevron } from 'react-icons/lib/md';
 import styled, { css } from 'styled-components';
 
-export interface HandleProps {
+interface HandleProps extends React.HTMLAttributes<HTMLDivElement> {
     backgroundColor?: string;
     bottom?: boolean;
     color?: string;
@@ -10,7 +10,7 @@ export interface HandleProps {
     innerRef?: (input: HTMLElement) => any;
     left?: boolean;
     right?: boolean;
-    rotate?: number;
+    rotation?: number;
     size?: number;
     top?: boolean;
     visible?: boolean;
@@ -45,7 +45,7 @@ const Container = styled.div`
         & > svg,
         & > div,
         & > span {
-            transform: rotate(${props.rotate}deg);
+            transform: rotate(${props.rotation}deg);
             transform-origin: center;
             opacity: 0.2;
         }
@@ -68,10 +68,11 @@ const Handle: React.SFC<HandleProps> = ({
     innerRef,
     left,
     right,
-    rotate = 0,
+    rotation = 0,
     size = 12,
     top,
     visible,
+    ...rest
 }) => (
     <Container
         backgroundColor={backgroundColor}
@@ -80,10 +81,11 @@ const Handle: React.SFC<HandleProps> = ({
         innerRef={innerRef}
         left={left}
         right={right}
-        rotate={rotate}
+        rotation={rotation}
         size={size}
         top={top}
         visible={visible}
+        {...rest}
     >
         <Icon />
     </Container>

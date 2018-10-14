@@ -1,25 +1,28 @@
-import React from "react";
+import React from 'react';
 
-import { text, boolean } from "@storybook/addon-knobs/react";
-import { storiesOf } from "@storybook/react";
-import { wInfo } from "../utils";
-import { Positionable } from "./Positionable";
+import { boolean } from '@storybook/addon-knobs/react';
+import { storiesOf } from '@storybook/react';
+import { wInfo } from '../utils';
+import PositionableDiv from './PositionableDiv';
 
 const Container = ({ children }) => (
     <div
         style={{
             backgroundColor: '#d0d0d0',
-            height: '300px',
+            height: '400px',
             position: 'relative',
-            width: '100%',
+            width: '400px',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            overflow: 'hidden',
         }}
     >
         {children}
     </div>
 );
 
-storiesOf("Positionable", module).addWithJSX(
-    "Basic usage",
+storiesOf('Positionable', module).addWithJSX(
+    'Basic usage',
     wInfo(`
     ### Notes
 
@@ -49,7 +52,8 @@ storiesOf("Positionable", module).addWithJSX(
     </Positionable>
     ~~~`)(() => (
         <Container>
-            <Positionable
+            <PositionableDiv
+                disabled={boolean('disabled', false)}
                 movable={boolean('movable', true)}
                 resizable={boolean('resizable', true)}
                 rotatable={boolean('rotatable', true)}
@@ -60,19 +64,21 @@ storiesOf("Positionable", module).addWithJSX(
                     width: '25%',
                     rotate: '0deg',
                 }}
-                render={({coverAllStyle}) => (
-                    <div
-                        style={{
-                            backgroundImage: 'url(https://picsum.photos/500/300)',
-                            backgroundPosition: 'center',
-                            backgroundSize: 'cover',
-                            backgroundColor: "#c0ffee",
-                            ...coverAllStyle
-                        }}
-                    />
-                )}
             >
-            </Positionable>
+                <div
+                    style={{
+                        backgroundImage: 'url(https://picsum.photos/500/300)',
+                        backgroundPosition: 'center',
+                        backgroundSize: 'cover',
+                        backgroundColor: '#c0ffee',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        bottom: 0,
+                        right: 0,
+                    }}
+                />
+            </PositionableDiv>
         </Container>
     ))
 );

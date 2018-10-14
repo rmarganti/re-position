@@ -1,4 +1,4 @@
-export type AsStrings<T> = { [P in keyof T]: string };
+export type PositionAndRotationStrings = AsStrings<Position & Rotation>;
 
 export type Position = Coordinates & Dimensions;
 export type PositionStrings = AsStrings<Position>;
@@ -21,5 +21,8 @@ export interface Dimensions {
 }
 
 export interface Rotation {
-    rotate: string;
+    rotation: string;
 }
+
+export type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
+type AsStrings<T> = { [P in keyof T]: string };

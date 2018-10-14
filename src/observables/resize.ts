@@ -13,10 +13,26 @@ import {
     positionOfElement,
     rotationOfElement,
     round,
+    scaleOfElement,
+    snapObjectValues,
     transformMatrixOfElement,
     visualCoords,
 } from '../utils';
-import { requestAnimationFramesUntil } from './requestAnimationFramesUntil';
+import {
+    documentMouseMove$,
+    documentMouseUp$,
+    requestAnimationFramesUntil,
+} from './misc';
+
+interface ResizeObservableOptions {
+    element: HTMLElement;
+    handle: HTMLElement;
+    onComplete?: () => void;
+    width?: boolean;
+    height?: boolean;
+    shouldConvertToPercent?: boolean;
+    snap?: number;
+}
 
 /*
  * Create an Obvservable that enables resizing an HTML element
@@ -25,17 +41,16 @@ import { requestAnimationFramesUntil } from './requestAnimationFramesUntil';
  * @param element HTML Element for which to enable resizing
  * @param handle HTML Element of the movable handle
  */
-export const createResizeObservable = (
-    element: HTMLElement,
-    handle: HTMLElement,
-    onComplete?: () => void,
-    width: boolean = true,
-    height: boolean = true,
-    shouldConvertToPercent: boolean = true
-): Observable<PositionStrings> => {
-    const mouseDown$ = fromEvent(handle, 'mousedown');
-    const mouseMove$ = fromEvent(document, 'mousemove');
-    const mouseUp$ = fromEvent(document, 'mouseup');
+export const createResizeObservable = ({
+    element,
+    handle,
+    onComplete,
+    width = true,
+    height = true,
+    shouldConvertToPercent = true,
+    snap = 1,
+}: ResizeObservableOptions): Observable<PositionStrings> => {
+    const mouseDown$ = fromEvent<MouseEvent>(handle, 'mousedown');
 
     return mouseDown$.pipe(
         filter((e: MouseEvent) => e.which === 1), // left clicks only
@@ -46,14 +61,20 @@ export const createResizeObservable = (
             const oldPosition = positionOfElement(element);
             const oldRotation = rotationOfElement(element);
             const transformMatrix = transformMatrixOfElement(element);
+            const scale = scaleOfElement(element);
 
-            const move$ = mouseMove$.pipe(
+            const move$ = documentMouseMove$.pipe(
                 map(
-                    angleAndDistanceFromPointToMouseEvent(e.clientX, e.clientY)
+                    angleAndDistanceFromPointToMouseEvent(
+                        e.clientX,
+                        e.clientY,
+                        scale
+                    )
                 ),
                 map(horizontalAndVerticalChange(oldRotation)),
                 map(applyToOriginalDimensions(oldPosition, width, height)),
                 map(limitToTwentyPxMinimum),
+                map(snapObjectValues(snap)),
                 map(
                     lockAspectRatio(
                         e.shiftKey,
@@ -69,7 +90,11 @@ export const createResizeObservable = (
                 )
             );
 
-            return requestAnimationFramesUntil(move$, mouseUp$, onComplete);
+            return requestAnimationFramesUntil(
+                move$,
+                documentMouseUp$,
+                onComplete
+            );
         })
     );
 };
@@ -79,10 +104,12 @@ export const createResizeObservable = (
  */
 const angleAndDistanceFromPointToMouseEvent = (
     originX: number,
-    originY: number
+    originY: number,
+    scale: number
 ) => (e: MouseEvent): AngleAndDistance => ({
     angle: angleBetweenPoints(originX, originY)(e.clientX, e.clientY),
-    distance: distanceBetweenPoints(originX, originY)(e.clientX, e.clientY),
+    distance:
+        distanceBetweenPoints(originX, originY)(e.clientX, e.clientY) / scale,
 });
 
 /**
@@ -115,7 +142,7 @@ const applyToOriginalDimensions = (
 });
 
 /**
- * Limit the dimensions to a twenty pixel mimum height and width.
+ * Limit the dimensions to a twenty pixel minimum height and width.
  */
 const limitToTwentyPxMinimum = (position: Position): Position => ({
     ...position,

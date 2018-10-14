@@ -1,26 +1,26 @@
 import * as React from 'react';
-import { MdRotateLeft as IconRotate } from 'react-icons/lib/md';
-import { Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
 
-import Handle from './Handle';
+import { takeUntil } from 'rxjs/operators';
 import {
-    createMoveObservable,
+    createDndObservable,
+    createKeyboardMoveObservable,
     createResizeObservable,
     createRotateObservable,
 } from './observables';
+import { PositionAndRotationStrings } from './types';
 import { objectsAreEqual } from './utils';
 
-export interface BoxSizing {
-    left: string;
-    height: string;
-    rotate: string;
-    top: string;
-    width: string;
-}
-
-export type PositionableState = BoxSizing;
+type PositionableState = PositionAndRotationStrings;
 
 export interface PositionableProps {
+    /**
+     * Should all functionality be disabled? This property takes
+     * precedence over `movable`, `resizable`, and `rotatable.
+     *
+     */
+    disabled?: boolean;
+
     /**
      * Should moving be enabled?
      * @default false
@@ -28,13 +28,16 @@ export interface PositionableProps {
     movable?: boolean;
 
     /** Callback to notify when Positioning has changed */
-    onUpdate?: (sizing: BoxSizing) => void;
+    onUpdate?: (sizing: PositionAndRotationStrings) => void;
 
     /** Current Positioning (left, top, width, height, zIndex) */
-    position: BoxSizing;
+    position: PositionAndRotationStrings;
 
     /** Render Prop alternative to using `children` */
     render: RenderCallback;
+
+    /** Snap drag and resize to pixels of this interval. */
+    snap?: number;
 
     /**
      * Should resizing be enabled?
@@ -49,12 +52,15 @@ export interface PositionableProps {
     rotatable?: boolean;
 }
 
-export type RenderCallback = (args: PositionableComponentProps) => JSX.Element;
+type RenderCallback = (args: PositionableComponentProps) => JSX.Element;
+
 export interface PositionableComponentProps {
     coverAllStyle: typeof COVER_ALL_STYLE;
+    position: PositionAndRotationStrings;
+    refHandlers: Positionable['refHandlers'];
 }
 
-export const COVER_ALL_STYLE = {
+const COVER_ALL_STYLE = {
     left: '0%',
     top: '0%',
     width: '100%',
@@ -66,18 +72,6 @@ export class Positionable extends React.Component<
     PositionableState
 > {
     public readonly state: PositionableState;
-
-    private container: HTMLDivElement;
-    private resizeHandle: HTMLElement;
-    private hResizeHandle: HTMLElement;
-    private vResizeHandle: HTMLElement;
-    private rotateHandle: HTMLElement;
-
-    private move$: Subscription;
-    private resize$: Subscription;
-    private hResize$: Subscription;
-    private vResize$: Subscription;
-    private rotate$: Subscription;
 
     private refHandlers = {
         container: (container: HTMLDivElement) => (this.container = container),
@@ -91,6 +85,14 @@ export class Positionable extends React.Component<
             (this.vResizeHandle = vResizeHandle),
     };
 
+    private container: HTMLDivElement;
+    private resizeHandle: HTMLElement;
+    private hResizeHandle: HTMLElement;
+    private vResizeHandle: HTMLElement;
+    private rotateHandle: HTMLElement;
+
+    private destroy$ = new Subject<void>();
+
     constructor(props: PositionableProps) {
         super(props);
 
@@ -98,93 +100,41 @@ export class Positionable extends React.Component<
     }
 
     public componentDidMount() {
-        this.updateSubscriptions();
+        this.buildSubscriptions();
     }
 
     public componentWillUnmount() {
-        [
-            this.move$,
-            this.resize$,
-            this.hResize$,
-            this.vResize$,
-            this.rotate$,
-        ].forEach(subscription => {
-            if (subscription) {
-                subscription.unsubscribe();
-            }
-        });
+        this.destroy$.next();
     }
 
     /**
-     * Update subscriptions and interal Position if the props change.
+     * Update subscriptions and internal Position if the props change.
      */
     public componentDidUpdate(prevProps: PositionableProps) {
         if (objectsAreEqual(this.props, prevProps)) {
             return;
         }
 
-        if (!objectsAreEqual(this.props.position, prevProps.position)) {
+        const { position, ...rest } = this.props;
+        const { position: prevPosition, ...prevRest } = prevProps;
+
+        if (!objectsAreEqual(position, prevPosition)) {
             this.setState(this.props.position);
         }
 
-        this.updateSubscriptions();
+        if (!objectsAreEqual(rest, prevRest)) {
+            this.buildSubscriptions();
+        }
     }
 
     public render() {
-        const {
-            children,
-            position,
-            movable,
-            render,
-            resizable,
-            rotatable,
-            ...rest
-        } = this.props;
+        const { render } = this.props;
 
-        return (
-            <div
-                ref={this.refHandlers.container}
-                style={{
-                    height: `${this.state.height}`,
-                    left: `${this.state.left}`,
-                    position: 'absolute',
-                    top: `${this.state.top}`,
-                    transform: `rotate(${this.state.rotate})`,
-                    width: `${this.state.width}`,
-                }}
-                {...rest}
-            >
-                {render && render({ coverAllStyle: COVER_ALL_STYLE })}
-
-                {children}
-
-                <Handle
-                    innerRef={this.refHandlers.resizeHandle}
-                    visible={resizable}
-                    rotate={45}
-                    bottom
-                    right
-                />
-                <Handle
-                    innerRef={this.refHandlers.hResizeHandle}
-                    visible={resizable}
-                    right
-                />
-                <Handle
-                    innerRef={this.refHandlers.vResizeHandle}
-                    visible={resizable}
-                    bottom
-                    rotate={90}
-                />
-                <Handle
-                    Icon={IconRotate}
-                    innerRef={this.refHandlers.rotateHandle}
-                    right
-                    top
-                    visible={rotatable}
-                />
-            </div>
-        );
+        return render({
+            coverAllStyle: COVER_ALL_STYLE,
+            position: this.state,
+            refHandlers: this.refHandlers,
+        });
     }
 
     /**
@@ -204,56 +154,78 @@ export class Positionable extends React.Component<
     /**
      * Handle subscribing to and unsubscribing from Observables.
      */
-    private updateSubscriptions() {
-        if (this.props.movable && (!this.move$ || this.move$.closed)) {
-            this.move$ = createMoveObservable(
-                this.container,
-                this.handleUpdate,
-                this.state.left.includes('%')
-            ).subscribe(newCoords => this.setState(newCoords));
-        } else if (!this.props.movable && this.move$) {
-            this.move$.unsubscribe();
+    private buildSubscriptions() {
+        this.destroy$.next();
+
+        if (this.props.disabled) {
+            return;
         }
 
-        if (this.props.resizable && (!this.resize$ || this.resize$.closed)) {
-            this.resize$ = createResizeObservable(
-                this.container,
-                this.resizeHandle,
-                this.handleUpdate,
-                true,
-                true,
-                this.state.width.includes('%')
-            ).subscribe(newPosition => this.setState(newPosition));
+        if (this.props.movable) {
+            createDndObservable({
+                element: this.container,
+                onComplete: this.handleUpdate,
+                shouldConvertToPercent: this.state.left.includes('%'),
+                snap: this.props.snap,
+            })
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(newCoords => this.setState(newCoords));
 
-            this.hResize$ = createResizeObservable(
-                this.container,
-                this.hResizeHandle,
-                this.handleUpdate,
-                true,
-                false
-            ).subscribe(newPosition => this.setState(newPosition));
-
-            this.vResize$ = createResizeObservable(
-                this.container,
-                this.vResizeHandle,
-                this.handleUpdate,
-                false,
-                true
-            ).subscribe(newPosition => this.setState(newPosition));
-        } else if (!this.props.resizable && this.resize$) {
-            this.resize$.unsubscribe();
-            this.hResize$.unsubscribe();
-            this.vResize$.unsubscribe();
+            createKeyboardMoveObservable({
+                element: this.container,
+                onComplete: this.handleUpdate,
+                shouldConvertToPercent: this.state.left.includes('%'),
+            })
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(newCoords => this.setState(newCoords));
         }
 
-        if (this.props.rotatable && (!this.rotate$ || this.rotate$.closed)) {
-            this.rotate$ = createRotateObservable(
-                this.container,
-                this.rotateHandle,
-                this.handleUpdate
-            ).subscribe(newRotation => this.setState(newRotation));
-        } else if (!this.props.rotatable && this.rotate$) {
-            this.rotate$.unsubscribe();
+        if (this.props.resizable) {
+            createResizeObservable({
+                element: this.container,
+                handle: this.resizeHandle,
+                onComplete: this.handleUpdate,
+                width: true,
+                height: true,
+                shouldConvertToPercent: this.state.width.includes('%'),
+                snap: this.props.snap,
+            })
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(newPosition => this.setState(newPosition));
+
+            createResizeObservable({
+                element: this.container,
+                handle: this.hResizeHandle,
+                onComplete: this.handleUpdate,
+                width: true,
+                height: false,
+                shouldConvertToPercent: this.state.width.includes('%'),
+                snap: this.props.snap,
+            })
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(newPosition => this.setState(newPosition));
+
+            createResizeObservable({
+                element: this.container,
+                handle: this.vResizeHandle,
+                onComplete: this.handleUpdate,
+                width: false,
+                height: true,
+                shouldConvertToPercent: this.state.width.includes('%'),
+                snap: this.props.snap,
+            })
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(newPosition => this.setState(newPosition));
+        }
+
+        if (this.props.rotatable) {
+            createRotateObservable({
+                element: this.container,
+                handle: this.rotateHandle,
+                onComplete: this.handleUpdate,
+            })
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(newRotation => this.setState(newRotation));
         }
     }
 }

@@ -12,7 +12,7 @@ describe('Handle', () => {
                 backgroundColor="red"
                 color="white"
                 size={40}
-                rotate={30}
+                rotation={30}
             />
         );
 

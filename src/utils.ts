@@ -1,5 +1,5 @@
 import { applyToPoint, fromString } from 'transformation-matrix';
-import { Coordinates, Position } from './types';
+import { Coordinates, CoordinatesStrings, Dimensions, Position } from './types';
 
 /**
  * Calculate the angle between two points.
@@ -87,13 +87,6 @@ export const visualCoords = (position: Position, transformMatrix: Matrix) => {
 };
 
 /**
- * Get the effectual position of an html element's top-left
- * corner after CSS transformations have been applied.
- */
-export const visualCoordsOfElement = (element: HTMLElement): Coordinates =>
-    visualCoords(positionOfElement(element), transformMatrixOfElement(element));
-
-/**
  * Get the transform Matrix object of an element.
  */
 export const transformMatrixOfElement = (element: HTMLElement): Matrix =>
@@ -102,8 +95,8 @@ export const transformMatrixOfElement = (element: HTMLElement): Matrix =>
 /**
  * Round a number to a given precision
  */
-export const round = (value: number, precission: number = 1): number =>
-    +value.toFixed(precission);
+export const round = (value: number, precision: number = 1): number =>
+    +value.toFixed(precision);
 
 /*
  * Cross browser way to get the current transform matrix of an Element.
@@ -151,7 +144,68 @@ export const objectsAreEqual = (a: {}, b: {}) => {
         }
     }
 
-    // If we made it this far, objects
-    // are considered equivalent
+    // If we made it this far, objects are considered equivalent
     return true;
+};
+
+/**
+ * Convert new coordinates to a percentage of an (parent) element.
+ */
+export const convertPositionToPercent = (
+    shouldConvertToPercent: boolean,
+    parent: HTMLElement
+) => (position: Coordinates): CoordinatesStrings =>
+    shouldConvertToPercent
+        ? {
+              left: `${round((position.left / parent.offsetWidth) * 100)}%`,
+              top: `${round((position.top / parent.offsetHeight) * 100)}%`,
+          }
+        : {
+              left: `${round(position.left)}px`,
+              top: `${round(position.top)}px`,
+          };
+
+/**
+ * Get the px size of an element.
+ */
+export const sizeOfElement = (element: HTMLElement): Dimensions => ({
+    height: element.offsetHeight,
+    width: element.offsetWidth,
+});
+
+/**
+ * Get the scale of an HTMLElement. Assumes x and y scale are equal.
+ */
+export const scaleOfElement = (element: HTMLElement): number => {
+    const transformationMatrix = transformMatrixOfElement(element);
+    const { a, c } = transformationMatrix;
+    const scale = Math.sqrt(a * a + c * c);
+
+    const scaleOfParent = element.parentElement
+        ? scaleOfElement(element.parentElement)
+        : 1;
+
+    return scale * scaleOfParent;
+};
+
+/**
+ * Snap/Restrict coordinates into a grid
+ *
+ * @param snapNumber grid gap
+ */
+export const snapObjectValues = (snapTo: number) => <T extends {}>(
+    input: T
+): T => {
+    if (snapTo === 0) {
+        return input;
+    }
+
+    return Object.keys(input).reduce(
+        (carrier, key) => {
+            return Object.assign({}, carrier, {
+                [key]: snapTo * Math.round(input[key] / snapTo),
+            });
+        },
+        {} as T
+    );
 };

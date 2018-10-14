@@ -1,5 +1,11 @@
-import { animationFrameScheduler, interval, Observable } from 'rxjs';
+import { animationFrameScheduler, fromEvent, interval, Observable } from 'rxjs';
 import { takeUntil, withLatestFrom } from 'rxjs/operators';
+
+export const documentMouseMove$ = fromEvent<MouseEvent>(document, 'mousemove');
+export const documentMouseUp$ = fromEvent<MouseEvent>(document, 'mouseup');
+
+export const keyDowns$ = fromEvent<KeyboardEvent>(document, 'keydown');
+export const keyUps$ = fromEvent<KeyboardEvent>(document, 'keyup');
 
 /**
  * Throttle an Observable to available animation
