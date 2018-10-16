@@ -26,3 +26,9 @@ export interface Rotation {
 
 export type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
 type AsStrings<T> = { [P in keyof T]: string };
+
+export enum ResizableDirection {
+    Horizontal = 'horizontal',
+    Vertical = 'vertical',
+    Both = 'both',
+}

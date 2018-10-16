@@ -1,5 +1,11 @@
 import { applyToPoint, fromString } from 'transformation-matrix';
-import { Coordinates, CoordinatesStrings, Dimensions, Position } from './types';
+import {
+    Coordinates,
+    CoordinatesStrings,
+    Dimensions,
+    Position,
+    ResizableDirection,
+} from './types';
 
 /**
  * Calculate the angle between two points.
@@ -214,4 +220,40 @@ export const snapObjectValues = (snapTo?: number) => <T extends {}>(
         },
         {} as T
     );
+};
+
+const directionHandleLocations = {
+    [ResizableDirection.Horizontal]: ['e', 'w'],
+    [ResizableDirection.Vertical]: ['n', 's'],
+    [ResizableDirection.Both]: ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'],
+};
+
+interface ResizeObservableConfig {
+    refHandlerName: string;
+    width: boolean;
+    height: boolean;
+    top: boolean;
+    right: boolean;
+    bottom: boolean;
+    left: boolean;
+}
+
+export const calculateResizeObservablesAndPositions = (
+    resizable: ResizableDirection | undefined
+): ResizeObservableConfig[] => {
+    if (!resizable) {
+        return [];
+    }
+
+    const directions = directionHandleLocations[resizable];
+
+    return directions.map(direction => ({
+        refHandlerName: `${direction}Resize`,
+        width: /e|w/.test(direction),
+        height: /n|s/.test(direction),
+        top: /n/.test(direction),
+        right: /e/.test(direction),
+        bottom: /s/.test(direction),
+        left: /w/.test(direction),
+    }));
 };

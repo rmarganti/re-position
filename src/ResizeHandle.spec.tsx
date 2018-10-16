@@ -1,15 +1,13 @@
 import { shallow } from 'enzyme';
 import * as React from 'react';
-import ChevronLeft from 'react-icons/lib/md/chevron-left';
 
-import Handle from './Handle';
+import ResizeHandle from './ResizeHandle';
 
-describe('Handle', () => {
+describe('ResizeHandle', () => {
     it('renders correctly', () => {
         const wrapper = shallow(
-            <Handle
-                Icon={ChevronLeft}
-                backgroundColor="red"
+            <ResizeHandle
+                borderColor="red"
                 color="white"
                 size={40}
                 rotation={30}

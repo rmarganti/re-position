@@ -1,15 +1,15 @@
 import * as React from 'react';
-import { MdRotateLeft as IconRotate } from 'react-icons/lib/md';
 import styled from 'styled-components';
 
-import Handle from './Handle';
-import { PositionableComponentProps } from './Positionable';
+import { PositionableComponentProps, PositionableProps } from './Positionable';
+import ResizeHandle from './ResizeHandle';
+import { calculateResizeObservablesAndPositions } from './utils';
 
 interface TransformBoxProps extends React.HTMLAttributes<HTMLDivElement> {
     position: PositionableComponentProps['position'];
     refHandlers: PositionableComponentProps['refHandlers'];
-    resizable?: boolean;
-    rotatable?: boolean;
+    resizable: PositionableProps['resizable'];
+    rotatable: PositionableProps['rotatable'];
 }
 
 const Wrapper = styled.div`
@@ -41,30 +41,23 @@ const TransformBox: React.SFC<TransformBoxProps> = ({
             width: `${position.width}`,
         }}
     >
-        <Handle
-            innerRef={refHandlers.resizeHandle}
-            visible={resizable}
-            rotation={45}
-            bottom
-            right
-        />
-        <Handle
-            innerRef={refHandlers.hResizeHandle}
-            visible={resizable}
-            right
-        />
-        <Handle
-            innerRef={refHandlers.vResizeHandle}
-            visible={resizable}
-            bottom
-            rotation={90}
-        />
-        <Handle
-            Icon={IconRotate}
-            innerRef={refHandlers.rotateHandle}
+        {calculateResizeObservablesAndPositions(resizable).map(
+            resizablePosition => (
+                <ResizeHandle
+                    key={resizablePosition.refHandlerName}
+                    innerRef={refHandlers[resizablePosition.refHandlerName]}
+                    top={resizablePosition.top}
+                    right={resizablePosition.right}
+                    bottom={resizablePosition.bottom}
+                    left={resizablePosition.left}
+                />
+            )
+        )}
+        <ResizeHandle
+            innerRef={refHandlers.rotate}
             right
             top
-            visible={rotatable}
+            hidden={!rotatable}
         />
     </Wrapper>
 );

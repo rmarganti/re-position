@@ -28,8 +28,10 @@ interface ResizeObservableOptions {
     element: HTMLElement;
     handle: HTMLElement;
     onComplete?: () => void;
-    width?: boolean;
-    height?: boolean;
+    top?: boolean;
+    right?: boolean;
+    bottom?: boolean;
+    left?: boolean;
     shouldConvertToPercent?: boolean;
     snap?: number;
 }
@@ -45,10 +47,12 @@ export const createResizeObservable = ({
     element,
     handle,
     onComplete,
-    width = true,
-    height = true,
     shouldConvertToPercent = true,
     snap,
+    top,
+    right,
+    bottom,
+    left,
 }: ResizeObservableOptions): Observable<PositionStrings> => {
     const mouseDown$ = fromEvent<MouseEvent>(handle, 'mousedown');
 
@@ -72,7 +76,15 @@ export const createResizeObservable = ({
                     )
                 ),
                 map(horizontalAndVerticalChange(oldRotation)),
-                map(applyToOriginalDimensions(oldPosition, width, height)),
+                map(
+                    applyToOriginalDimensions(
+                        oldPosition,
+                        top,
+                        right,
+                        bottom,
+                        left
+                    )
+                ),
                 map(limitToTwentyPxMinimum),
                 map(snapObjectValues(snap)),
                 distinctUntilChanged(),
@@ -134,13 +146,36 @@ const horizontalAndVerticalChange = (oldRotation: number) => (
  */
 const applyToOriginalDimensions = (
     oldPosition: Position,
-    width: boolean,
-    height: boolean
-) => (change: Dimensions): Position => ({
-    ...oldPosition,
-    width: width ? oldPosition.width + change.width : oldPosition.width,
-    height: height ? oldPosition.height + change.height : oldPosition.height,
-});
+    top: boolean | undefined,
+    right: boolean | undefined,
+    bottom: boolean | undefined,
+    left: boolean | undefined
+) => (change: Dimensions): Position => {
+    const positionLeft = left
+        ? oldPosition.left + change.width
+        : oldPosition.left;
+
+    const positionTop = top ? oldPosition.top + change.height : oldPosition.top;
+
+    const positionWidth = left
+        ? oldPosition.width - change.width
+        : right
+            ? oldPosition.width + change.width
+            : oldPosition.width;
+
+    const positionHeight = top
+        ? oldPosition.height - change.height
+        : bottom
+            ? oldPosition.height + change.height
+            : oldPosition.height;
+
+    return {
+        left: positionLeft,
+        top: positionTop,
+        width: positionWidth,
+        height: positionHeight,
+    };
+};
 
 /**
  * Limit the dimensions to a twenty pixel minimum height and width.

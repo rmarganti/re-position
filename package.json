@@ -18,20 +18,17 @@
     "dependencies": {
         "react": "^16.3.1",
         "react-dom": "^16.3.1",
-        "react-icons": "^2.2.7",
         "rxjs": "^6.2.0",
         "styled-components": "^3.3.2",
         "transformation-matrix": "^1.11.0"
     },
     "devDependencies": {
         "@storybook/addon-info": "^3.4.0",
-        "@storybook/addon-knobs": "^3.4.0",
         "@storybook/react": "^3.4.0",
         "@types/enzyme": "^3.1.10",
         "@types/jest": "^22.2.2",
         "@types/node": "10.1.4",
         "@types/react": "^16.3.5",
-        "@types/react-icons": "^2.2.5",
         "awesome-typescript-loader": "^4.0.1",
         "babel-core": "^6.26.0",
         "enzyme": "^3.3.0",

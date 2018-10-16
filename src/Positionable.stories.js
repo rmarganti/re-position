@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { boolean } from '@storybook/addon-knobs/react';
 import { storiesOf } from '@storybook/react';
 import { wInfo } from '../utils';
 import PositionableDiv from './PositionableDiv';
@@ -21,16 +20,17 @@ const Container = ({ children }) => (
     </div>
 );
 
-storiesOf('Positionable', module).addWithJSX(
-    'Basic usage',
+storiesOf('react-positionable', module).addWithJSX(
+    'PositionableDiv',
     wInfo(`
     ### Notes
 
-    Basic usage
+    The power of \`react-positionable\` with a
+    useful implementation and UI out of the box.
 
     ### Usage
     ~~~js
-    <Positionable
+    <PositionableDiv
         movable
         resizable
         rotatable
@@ -42,21 +42,14 @@ storiesOf('Positionable', module).addWithJSX(
         }}
         isSelected={true}
     >
-        /**
-         * Your root "Contained" Element needs the
-         * following styles to fill the Positionable container:
-         *
-         * left: 0, top: 0, width: 100%; height: 100%; position: absolute;
-         */
-        <Contained />
-    </Positionable>
+        <p>This can be just about anything!</p>
+    </PositionableDiv>
     ~~~`)(() => (
         <Container>
             <PositionableDiv
-                disabled={boolean('disabled', false)}
-                movable={boolean('movable', true)}
-                resizable={boolean('resizable', true)}
-                rotatable={boolean('rotatable', true)}
+                movable
+                resizable="both"
+                rotatable
                 position={{
                     height: '25%',
                     left: '37.5%',
