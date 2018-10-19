@@ -1,0 +1,16 @@
+{
+    "editor.formatOnSave": true,
+    "tslint.autoFixOnSave": true,
+    "search.exclude": {
+        "**/node_modules": true,
+        "build": true
+    },
+    "cSpell.words": [
+        "Obvservable",
+        "Positionable",
+        "Unmount",
+        "nesw",
+        "nwse",
+        "resizable"
+    ]
+}

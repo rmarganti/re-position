@@ -10,7 +10,8 @@ import {
 } from './observables';
 import { PositionAndRotationStrings, ResizableDirection } from './types';
 import {
-    calculateResizeObservablesAndPositions,
+    calculateResizeObservableConfigs,
+    calculateRotateObservableConfigs,
     objectsAreEqual,
 } from './utils';
 
@@ -72,7 +73,12 @@ export class Positionable extends React.Component<
 
     private refHandlers = {
         container: React.createRef<HTMLElement>(),
-        rotate: React.createRef<HTMLElement>(),
+
+        neRotate: React.createRef<HTMLElement>(),
+        seRotate: React.createRef<HTMLElement>(),
+        swRotate: React.createRef<HTMLElement>(),
+        nwRotate: React.createRef<HTMLElement>(),
+
         nResize: React.createRef<HTMLElement>(),
         neResize: React.createRef<HTMLElement>(),
         eResize: React.createRef<HTMLElement>(),
@@ -157,7 +163,6 @@ export class Positionable extends React.Component<
         }
 
         if (!this.refHandlers.container.current) {
-            console.error('No container ref found.');
             return;
         }
 
@@ -181,7 +186,7 @@ export class Positionable extends React.Component<
         }
 
         if (resizable) {
-            const resizeObservableConfigs = calculateResizeObservablesAndPositions(
+            const resizeObservableConfigs = calculateResizeObservableConfigs(
                 resizable
             );
 
@@ -189,9 +194,7 @@ export class Positionable extends React.Component<
                 const handle = this.refHandlers[config.refHandlerName].current;
 
                 if (!handle) {
-                    console.error(
-                        `Unable to find ref for ${config.refHandlerName}.`
-                    );
+                    return;
                 } else {
                     createResizeObservable({
                         element: this.refHandlers.container.current!,
@@ -211,17 +214,23 @@ export class Positionable extends React.Component<
         }
 
         if (rotatable) {
-            if (this.refHandlers.rotate.current) {
-                createRotateObservable({
-                    element: this.refHandlers.container.current,
-                    handle: this.refHandlers.rotate.current,
-                    onComplete: this.handleUpdate,
-                })
-                    .pipe(takeUntil(this.destroy$))
-                    .subscribe(newRotation => this.setState(newRotation));
-            } else {
-                console.error('No rotate handle ref found.');
-            }
+            const rotateObservableConfigs = calculateRotateObservableConfigs();
+
+            rotateObservableConfigs.forEach(config => {
+                const handle = this.refHandlers[config.refHandlerName].current;
+
+                if (!handle) {
+                    return;
+                } else {
+                    createRotateObservable({
+                        element: this.refHandlers.container.current!,
+                        handle,
+                        onComplete: this.handleUpdate,
+                    })
+                        .pipe(takeUntil(this.destroy$))
+                        .subscribe(newRotation => this.setState(newRotation));
+                }
+            });
         }
     }
 }

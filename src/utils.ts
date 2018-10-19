@@ -197,19 +197,17 @@ const directionHandleLocations = {
     [ResizableDirection.Both]: ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'],
 };
 
-interface ResizeObservableConfig {
+interface ObservableConfig {
     refHandlerName: string;
-    width: boolean;
-    height: boolean;
     top: boolean;
     right: boolean;
     bottom: boolean;
     left: boolean;
 }
 
-export const calculateResizeObservablesAndPositions = (
+export const calculateResizeObservableConfigs = (
     resizable: ResizableDirection | undefined
-): ResizeObservableConfig[] => {
+): ObservableConfig[] => {
     if (!resizable) {
         return [];
     }
@@ -218,14 +216,21 @@ export const calculateResizeObservablesAndPositions = (
 
     return directions.map(direction => ({
         refHandlerName: `${direction}Resize`,
-        width: /e|w/.test(direction),
-        height: /n|s/.test(direction),
         top: /n/.test(direction),
         right: /e/.test(direction),
         bottom: /s/.test(direction),
         left: /w/.test(direction),
     }));
 };
+
+export const calculateRotateObservableConfigs = (): ObservableConfig[] =>
+    ['ne', 'se', 'sw', 'nw'].map(direction => ({
+        refHandlerName: `${direction}Rotate`,
+        top: /n/.test(direction),
+        right: /e/.test(direction),
+        bottom: /s/.test(direction),
+        left: /w/.test(direction),
+    }));
 
 export const corners = (position: Position, tm: Matrix) => {
     const halfWidth = position.width / 2;
