@@ -49,13 +49,13 @@ storiesOf('react-positionable', module).addWithJSX(
             <PositionableDiv
                 movable
                 resizable="both"
-                rotatable
+                // rotatable
                 position={{
-                    height: '25%',
-                    left: '37.5%',
-                    top: '37.5%',
-                    width: '25%',
-                    rotate: '0deg',
+                    left: '30%',
+                    top: '30%',
+                    height: '40%',
+                    width: '40%',
+                    rotation: '-45deg',
                 }}
             >
                 <div

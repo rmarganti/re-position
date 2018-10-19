@@ -9,6 +9,7 @@ import {
 } from '../types';
 import {
     angleBetweenPoints,
+    corners,
     distanceBetweenPoints,
     positionOfElement,
     rotationOfElement,
@@ -16,7 +17,6 @@ import {
     scaleOfElement,
     snapObjectValues,
     transformMatrixOfElement,
-    visualCoords,
 } from '../utils';
 import {
     documentMouseMove$,
@@ -94,7 +94,16 @@ export const createResizeObservable = ({
                         oldPosition.width / oldPosition.height
                     )
                 ),
-                map(offsetForVisualConsistency(oldPosition, transformMatrix)),
+                map(
+                    offsetForVisualConsistency(
+                        oldPosition,
+                        transformMatrix,
+                        top,
+                        right,
+                        bottom,
+                        left
+                    )
+                ),
                 map(
                     convertDimensionsToPercent(
                         shouldConvertToPercent,
@@ -220,16 +229,37 @@ const lockAspectRatio = (shouldLock: boolean, aspectRatio: number) => (
  */
 const offsetForVisualConsistency = (
     oldPosition: Position,
-    transformMatrix: Matrix
-) => (position: Position): Position => {
-    const oldVisualCoords = visualCoords(oldPosition, transformMatrix);
-    const newVisualCoords = visualCoords(position, transformMatrix);
+    transformMatrix: Matrix,
+    top?: boolean,
+    right?: boolean,
+    bottom?: boolean,
+    left?: boolean
+) => (newPosition: Position): Position => {
+    const oldCorners = corners(oldPosition, transformMatrix);
+    const newCorners = corners(newPosition, transformMatrix);
+
+    let changeX: number;
+    let changeY: number;
+
+    if (bottom && left) {
+        changeX = newCorners.ne.x - oldCorners.ne.x;
+        changeY = newCorners.ne.y - oldCorners.ne.y;
+    } else if (top && right) {
+        changeX = newCorners.sw.x - oldCorners.sw.x;
+        changeY = newCorners.sw.y - oldCorners.sw.y;
+    } else if (top || left) {
+        changeX = newCorners.se.x - oldCorners.se.x;
+        changeY = newCorners.se.y - oldCorners.se.y;
+    } else {
+        changeX = newCorners.nw.x - oldCorners.nw.x;
+        changeY = newCorners.nw.y - oldCorners.nw.y;
+    }
 
     return {
-        left: position.left - (newVisualCoords.left - oldVisualCoords.left),
-        top: position.top - (newVisualCoords.top - oldVisualCoords.top),
-        width: position.width,
-        height: position.height,
+        left: newPosition.left - changeX,
+        top: newPosition.top - changeY,
+        width: newPosition.width,
+        height: newPosition.height,
     };
 };
 

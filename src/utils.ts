@@ -68,28 +68,26 @@ export const rotationOfElement = (element: HTMLElement) => {
 };
 
 /**
- * Get the effectual coordinates of element's top-left corner,
- * given the position and transform matrix of that element.
+ * Get the px size of an element.
  */
-export const visualCoords = (position: Position, transformMatrix: Matrix) => {
-    const originalOffsetFromCenter = {
-        x: position.width / -2,
-        y: position.height / -2,
-    };
+export const sizeOfElement = (element: HTMLElement): Dimensions => ({
+    height: element.offsetHeight,
+    width: element.offsetWidth,
+});
 
-    const visualOffsetFromCenter = applyToPoint(
-        transformMatrix,
-        originalOffsetFromCenter
-    );
+/**
+ * Get the scale of an HTMLElement. Assumes x and y scale are equal.
+ */
+export const scaleOfElement = (element: HTMLElement): number => {
+    const transformationMatrix = transformMatrixOfElement(element);
+    const { a, c } = transformationMatrix;
+    const scale = Math.sqrt(a * a + c * c);
 
-    return {
-        left:
-            position.left +
-            (visualOffsetFromCenter.x - originalOffsetFromCenter.x),
-        top:
-            position.top +
-            (visualOffsetFromCenter.y - originalOffsetFromCenter.y),
-    };
+    const scaleOfParent = element.parentElement
+        ? scaleOfElement(element.parentElement)
+        : 1;
+
+    return scale * scaleOfParent;
 };
 
 /**
@@ -97,12 +95,6 @@ export const visualCoords = (position: Position, transformMatrix: Matrix) => {
  */
 export const transformMatrixOfElement = (element: HTMLElement): Matrix =>
     fromString(transformMatrixStringOfElement(element));
-
-/**
- * Round a number to a given precision
- */
-export const round = (value: number, precision: number = 1): number =>
-    +value.toFixed(precision);
 
 /*
  * Cross browser way to get the current transform matrix of an Element.
@@ -172,29 +164,6 @@ export const convertPositionToPercent = (
           };
 
 /**
- * Get the px size of an element.
- */
-export const sizeOfElement = (element: HTMLElement): Dimensions => ({
-    height: element.offsetHeight,
-    width: element.offsetWidth,
-});
-
-/**
- * Get the scale of an HTMLElement. Assumes x and y scale are equal.
- */
-export const scaleOfElement = (element: HTMLElement): number => {
-    const transformationMatrix = transformMatrixOfElement(element);
-    const { a, c } = transformationMatrix;
-    const scale = Math.sqrt(a * a + c * c);
-
-    const scaleOfParent = element.parentElement
-        ? scaleOfElement(element.parentElement)
-        : 1;
-
-    return scale * scaleOfParent;
-};
-
-/**
  * Snap/Restrict coordinates into a grid
  *
  * @param snapNumber grid gap
@@ -257,3 +226,43 @@ export const calculateResizeObservablesAndPositions = (
         left: /w/.test(direction),
     }));
 };
+
+export const corners = (position: Position, tm: Matrix) => {
+    const halfWidth = position.width / 2;
+    const halfHeight = position.height / 2;
+
+    const nw = { x: -halfWidth, y: -halfHeight };
+    const ne = { x: halfWidth, y: -halfHeight };
+    const sw = { x: -halfWidth, y: halfHeight };
+    const se = { x: halfWidth, y: halfHeight };
+
+    const tnw = applyToPoint(tm, nw);
+    const tne = applyToPoint(tm, ne);
+    const tsw = applyToPoint(tm, sw);
+    const tse = applyToPoint(tm, se);
+
+    return {
+        nw: {
+            x: tnw.x + halfWidth + position.left,
+            y: tnw.y + halfHeight + position.top,
+        },
+        ne: {
+            x: tne.x + halfWidth + position.left,
+            y: tne.y + halfHeight + position.top,
+        },
+        sw: {
+            x: tsw.x + halfWidth + position.left,
+            y: tsw.y + halfHeight + position.top,
+        },
+        se: {
+            x: tse.x + halfWidth + position.left,
+            y: tse.y + halfHeight + position.top,
+        },
+    };
+};
+
+/**
+ * Round a number to a given precision
+ */
+export const round = (value: number, precision: number = 1): number =>
+    +value.toFixed(precision);
