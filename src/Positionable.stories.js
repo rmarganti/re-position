@@ -2,7 +2,7 @@ import React from 'react';
 
 import { storiesOf } from '@storybook/react';
 import { wInfo } from '../utils';
-import PositionableDiv from './PositionableDiv';
+import PositionableContainer from './PositionableContainer';
 
 const Container = ({ children }) => (
     <div
@@ -21,7 +21,7 @@ const Container = ({ children }) => (
 );
 
 storiesOf('react-positionable', module).addWithJSX(
-    'PositionableDiv',
+    'PositionableContainer',
     wInfo(`
     ### Notes
 
@@ -30,7 +30,7 @@ storiesOf('react-positionable', module).addWithJSX(
 
     ### Usage
     ~~~js
-    <PositionableDiv
+    <PositionableContainer
         movable
         resizable
         rotatable
@@ -40,13 +40,12 @@ storiesOf('react-positionable', module).addWithJSX(
             top: '0%',
             width: '25%',
         }}
-        isSelected={true}
     >
         <p>This can be just about anything!</p>
-    </PositionableDiv>
+    </PositionableContainer>
     ~~~`)(() => (
         <Container>
-            <PositionableDiv
+            <PositionableContainer
                 movable
                 resizable="both"
                 rotatable
@@ -71,7 +70,7 @@ storiesOf('react-positionable', module).addWithJSX(
                         right: 0,
                     }}
                 />
-            </PositionableDiv>
+            </PositionableContainer>
         </Container>
     ))
 );

@@ -4,12 +4,15 @@ import { Positionable, PositionableProps } from './Positionable';
 import TransformBox from './TransformBox';
 import { Omit } from './types';
 
-type PositionableDivProps = Omit<PositionableProps, 'render'> &
-    React.HTMLAttributes<HTMLDivElement>;
+type PositionableContainerProps = Omit<PositionableProps, 'render'> &
+    React.HTMLAttributes<HTMLElement> & {
+        Element: React.ComponentType<any>;
+    };
 
-const PositionableDiv: React.SFC<PositionableDivProps> = ({
+const PositionableContainer: React.SFC<PositionableContainerProps> = ({
     children,
     disabled,
+    Element = 'div',
     rotatable,
     resizable,
     movable,
@@ -29,7 +32,7 @@ const PositionableDiv: React.SFC<PositionableDivProps> = ({
         snap={snap}
         render={({ position: currentPosition, refHandlers }) => (
             <>
-                <div
+                <Element
                     style={{
                         ...style,
                         height: `${currentPosition.height}`,
@@ -42,7 +45,7 @@ const PositionableDiv: React.SFC<PositionableDivProps> = ({
                     {...rest}
                 >
                     {children}
-                </div>
+                </Element>
                 {!disabled &&
                     (resizable || rotatable || movable) && (
                         <TransformBox
@@ -57,4 +60,4 @@ const PositionableDiv: React.SFC<PositionableDivProps> = ({
     />
 );
 
-export default PositionableDiv;
+export default PositionableContainer;
