@@ -2,12 +2,16 @@ import * as React from 'react';
 
 import { Positionable, PositionableProps } from './Positionable';
 import TransformBox from './TransformBox';
-import { Omit } from './types';
 
-type PositionableContainerProps = Omit<PositionableProps, 'render'> &
-    React.HTMLAttributes<HTMLElement> & {
-        Element: React.ComponentType<any>;
-    };
+interface PositionableContainerProps
+    extends PositionableProps,
+        React.HTMLAttributes<HTMLElement> {
+    /** Component or HTML element to use for the container. */
+    Element?: React.ComponentType<any>;
+
+    /** Render Prop alternative to using `children` */
+    render: () => JSX.Element;
+}
 
 const PositionableContainer: React.SFC<PositionableContainerProps> = ({
     children,
@@ -18,6 +22,7 @@ const PositionableContainer: React.SFC<PositionableContainerProps> = ({
     movable,
     position,
     onUpdate,
+    render,
     snap,
     style,
     ...rest
@@ -44,7 +49,7 @@ const PositionableContainer: React.SFC<PositionableContainerProps> = ({
                     }}
                     {...rest}
                 >
-                    {children}
+                    {render ? render() : children}
                 </Element>
                 {!disabled &&
                     (resizable || rotatable || movable) && (

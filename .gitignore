@@ -1,4 +1,6 @@
-node_modules
+.docz
 build
+node_modules
 yarn-error.log
 yarn.lock
+

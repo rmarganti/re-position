@@ -191,10 +191,12 @@ export const snapObjectValues = (snapTo?: number) => <T extends {}>(
     );
 };
 
-const directionHandleLocations = {
-    [ResizableDirection.Horizontal]: ['e', 'w'],
-    [ResizableDirection.Vertical]: ['n', 's'],
-    [ResizableDirection.Both]: ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'],
+type DirectionHandleLocations = { [key in ResizableDirection]: string[] };
+
+const directionHandleLocations: DirectionHandleLocations = {
+    horizontal: ['e', 'w'],
+    vertical: ['n', 's'],
+    both: ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'],
 };
 
 interface ObservableConfig {

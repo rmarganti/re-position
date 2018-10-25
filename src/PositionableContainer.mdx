@@ -1,0 +1,45 @@
+---
+name: PositionableContainer
+---
+
+import { Playground, PropsTable } from 'docz'
+import PositionableContainer from './PositionableContainer';
+
+# PositionableContainer
+
+# Example Usage
+
+<Playground style={{
+    height: '400px',
+    overflow: 'hidden',
+    position: 'relative',
+}}>
+    <PositionableContainer
+        movable
+        resizable="both"
+        rotatable
+        position={{
+            left: '30%',
+            top: '30%',
+            height: '40%',
+            width: '40%',
+            rotation: '-45deg',
+        }}
+    >
+        <div
+            style={{
+                backgroundImage: 'url(https://picsum.photos/500/300)',
+                backgroundPosition: 'center',
+                backgroundSize: 'cover',
+                backgroundColor: '#c0ffee',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                bottom: 0,
+                right: 0,
+            }}
+        />
+    </PositionableContainer>
+</Playground>
+
+<PropsTable of={PositionableContainer} />

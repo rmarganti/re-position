@@ -3,6 +3,8 @@
     "tslint.autoFixOnSave": true,
     "search.exclude": {
         "**/node_modules": true,
+        "**/*.html": true,
+        ".docz": true,
         "build": true
     },
     "cSpell.words": [
