@@ -3,14 +3,16 @@ import * as React from 'react';
 import { Positionable, PositionableProps } from './Positionable';
 import TransformBox from './TransformBox';
 
-interface PositionableContainerProps
-    extends PositionableProps,
-        React.HTMLAttributes<HTMLElement> {
+interface PositionableContainerProps extends PositionableProps {
     /** Component or HTML element to use for the container. */
     Element?: React.ComponentType<any>;
 
     /** Render Prop alternative to using `children` */
     render: () => JSX.Element;
+
+    className?: string;
+
+    style: React.CSSProperties;
 }
 
 const PositionableContainer: React.SFC<PositionableContainerProps> = ({
