@@ -1,16 +1,44 @@
 import * as React from 'react';
 
-import { Positionable, PositionableProps } from './Positionable';
+import { Positionable } from './Positionable';
 import TransformBox from './TransformBox';
+import { PositionAndRotationStrings, ResizableHandleLocation } from './types';
 
-interface PositionableContainerProps extends PositionableProps {
+export interface PositionableContainerProps {
+    className?: string;
+
+    /**
+     * Should all functionality be disabled? This property takes
+     * precedence over `movable`, `resizable`, and `rotatable`.
+     */
+    disabled?: boolean;
+
     /** Component or HTML element to use for the container. */
     Element?: React.ComponentType<any>;
+
+    /** Should moving be enabled? */
+    movable?: boolean;
+
+    /** Callback to notify when Positioning has changed */
+    onUpdate?: (sizing: PositionAndRotationStrings) => void;
+
+    /** Current Positioning (left, top, width, height, rotation) */
+    position: PositionAndRotationStrings;
 
     /** Render Prop alternative to using `children` */
     render: () => JSX.Element;
 
-    className?: string;
+    /**
+     * Either an array of directions (ie. `['n', 'e', 'se']`) or
+     * `true` if you want enable all directions.
+     */
+    resizable: ResizableHandleLocation[] | boolean;
+
+    /** Should rotation be enabled? */
+    rotatable?: boolean;
+
+    /** Snap drag and resize to pixels of this interval. */
+    snap?: number;
 
     style: React.CSSProperties;
 }
@@ -34,7 +62,7 @@ const PositionableContainer: React.SFC<PositionableContainerProps> = ({
         movable={movable}
         onUpdate={onUpdate}
         position={position}
-        resizable={resizable}
+        resizable={!!resizable}
         rotatable={rotatable}
         snap={snap}
         render={({ position: currentPosition, refHandlers }) => (

@@ -1,5 +1,5 @@
 {
-    "name": "react-positionable",
+    "name": "re-position",
     "version": "0.0.1",
     "main": "build/lib/index.js",
     "types": "build/lib/index.d.ts",
@@ -12,15 +12,13 @@
         "build-lib": "tsc",
         "dev": "docz dev"
     },
-    "repository": "https://github.com/rmarganti/react-positionable",
-    "author": "Ryan Marganti <ryan.marganti@gmail.com>",
+    "repository": "https://github.com/rmarganti/re-position",
+    "author": "Ryan Marganti <ryanmarganti@soulsizzle.com>",
     "license": "MIT",
     "dependencies": {
-        "react": "^16.3.1",
-        "react-dom": "^16.3.1",
-        "rxjs": "^6.2.0",
-        "styled-components": "^3.3.2",
-        "transformation-matrix": "^1.11.0"
+        "rxjs": "^6.0.0",
+        "styled-components": "^3.0.0",
+        "transformation-matrix": "^1.0.0"
     },
     "devDependencies": {
         "@types/enzyme": "^3.1.10",
@@ -34,6 +32,8 @@
         "enzyme": "^3.3.0",
         "jest": "^22.4.3",
         "prettier": "^1.13.5",
+        "react": "^16.6.0",
+        "react-dom": "^16.6.0",
         "rimraf": "^2.6.2",
         "ts-jest": "^22.4.2",
         "tslint": "^5.10.0",
@@ -52,5 +52,9 @@
             "tsx",
             "js"
         ]
+    },
+    "peerDependencies": {
+        "react": "^15.6.0",
+        "react-dom": "^16.6.0"
     }
 }

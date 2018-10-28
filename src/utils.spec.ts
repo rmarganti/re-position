@@ -1,10 +1,10 @@
 import { identity, rotateDEG } from 'transformation-matrix';
 
 import { Position } from './types';
-import { corners } from './utils';
+import { visualCorners } from './utils';
 
 describe('utils', () => {
-    describe('corners', () => {
+    describe('visualCorners', () => {
         it('calculate the visual corners of non-rotated element', () => {
             const centeredOnAxis: Position = {
                 left: -10,
@@ -13,7 +13,10 @@ describe('utils', () => {
                 height: 20,
             };
 
-            const centeredOnAccessCorners = corners(centeredOnAxis, identity());
+            const centeredOnAccessCorners = visualCorners(
+                centeredOnAxis,
+                identity()
+            );
 
             expect(centeredOnAccessCorners.ne).toEqual({ x: 10, y: -10 });
             expect(centeredOnAccessCorners.se).toEqual({ x: 10, y: 10 });
@@ -27,7 +30,7 @@ describe('utils', () => {
                 height: 20,
             };
 
-            const allPositiveCorners = corners(allPositive, identity());
+            const allPositiveCorners = visualCorners(allPositive, identity());
 
             expect(allPositiveCorners.ne).toEqual({ x: 30, y: 10 });
             expect(allPositiveCorners.se).toEqual({ x: 30, y: 30 });
@@ -43,7 +46,7 @@ describe('utils', () => {
                 height: 20,
             };
 
-            const centeredOnAccessCorners = corners(
+            const centeredOnAccessCorners = visualCorners(
                 centeredOnAxis,
                 rotateDEG(90)
             );
@@ -60,7 +63,10 @@ describe('utils', () => {
                 height: 20,
             };
 
-            const allPositiveCorners = corners(allPositive, rotateDEG(90));
+            const allPositiveCorners = visualCorners(
+                allPositive,
+                rotateDEG(90)
+            );
 
             expect(allPositiveCorners.ne).toEqual({ x: 30, y: 30 });
             expect(allPositiveCorners.se).toEqual({ x: 10, y: 30 });

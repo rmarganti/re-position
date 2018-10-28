@@ -1,7 +1,4 @@
 module.exports = {
-    title: 'Docz Typescript',
+    title: 're-position',
     typescript: true,
-    dest: './docs',
-    hashRouter: true,
 };
-

@@ -2,6 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import { PositionableComponentProps, PositionableProps } from './Positionable';
+import { PositionableContainerProps } from './PositionableContainer';
 import ResizeHandle from './ResizeHandle';
 import RotateHandle from './RotateHandle';
 import {
@@ -12,7 +13,7 @@ import {
 interface TransformBoxProps extends React.HTMLAttributes<HTMLDivElement> {
     position: PositionableComponentProps['position'];
     refHandlers: PositionableComponentProps['refHandlers'];
-    resizable: PositionableProps['resizable'];
+    resizable: PositionableContainerProps['resizable'];
     rotatable: PositionableProps['rotatable'];
 }
 
@@ -45,16 +46,19 @@ const TransformBox: React.SFC<TransformBoxProps> = ({
             width: `${position.width}`,
         }}
     >
-        {calculateResizeObservableConfigs(resizable).map(resizablePosition => (
-            <ResizeHandle
-                key={resizablePosition.refHandlerName}
-                innerRef={refHandlers[resizablePosition.refHandlerName]}
-                top={resizablePosition.top}
-                right={resizablePosition.right}
-                bottom={resizablePosition.bottom}
-                left={resizablePosition.left}
-            />
-        ))}
+        {resizable &&
+            calculateResizeObservableConfigs(
+                Array.isArray(resizable) ? resizable : undefined
+            ).map(resizablePosition => (
+                <ResizeHandle
+                    key={resizablePosition.refHandlerName}
+                    innerRef={refHandlers[resizablePosition.refHandlerName]}
+                    top={resizablePosition.top}
+                    right={resizablePosition.right}
+                    bottom={resizablePosition.bottom}
+                    left={resizablePosition.left}
+                />
+            ))}
         {rotatable &&
             calculateRotateObservableConfigs().map(rotatablePosition => (
                 <RotateHandle

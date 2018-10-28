@@ -24,7 +24,16 @@ export interface Rotation {
     rotation: string;
 }
 
+export type ResizableHandleLocation =
+    | 'n'
+    | 'ne'
+    | 'e'
+    | 'se'
+    | 's'
+    | 'sw'
+    | 'w'
+    | 'nw';
+
+// Utilities
 export type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
 type AsStrings<T> = { [P in keyof T]: string };
-
-export type ResizableDirection = 'horizontal' | 'vertical' | 'both';

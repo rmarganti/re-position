@@ -9,7 +9,6 @@ import {
 } from '../types';
 import {
     angleBetweenPoints,
-    corners,
     distanceBetweenPoints,
     positionOfElement,
     rotationOfElement,
@@ -17,6 +16,7 @@ import {
     scaleOfElement,
     snapObjectValues,
     transformMatrixOfElement,
+    visualCorners,
 } from '../utils';
 import {
     documentMouseMove$,
@@ -235,8 +235,8 @@ const offsetForVisualConsistency = (
     bottom?: boolean,
     left?: boolean
 ) => (newPosition: Position): Position => {
-    const oldCorners = corners(oldPosition, transformMatrix);
-    const newCorners = corners(newPosition, transformMatrix);
+    const oldCorners = visualCorners(oldPosition, transformMatrix);
+    const newCorners = visualCorners(newPosition, transformMatrix);
 
     let changeX: number;
     let changeY: number;

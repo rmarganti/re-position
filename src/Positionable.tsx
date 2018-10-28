@@ -8,10 +8,11 @@ import {
     createResizeObservable,
     createRotateObservable,
 } from './observables';
-import { PositionAndRotationStrings, ResizableDirection } from './types';
+import { PositionAndRotationStrings } from './types';
 import {
     calculateResizeObservableConfigs,
     calculateRotateObservableConfigs,
+    isFunction,
     objectsAreEqual,
 } from './utils';
 
@@ -30,17 +31,17 @@ export interface PositionableProps {
     /** Callback to notify when Positioning has changed */
     onUpdate?: (sizing: PositionAndRotationStrings) => void;
 
-    /** Current Positioning (left, top, width, height, zIndex) */
+    /** Current Positioning (left, top, width, height, rotation) */
     position: PositionAndRotationStrings;
 
     /** Render Prop alternative to using `children` */
-    render: RenderCallback;
+    render?: RenderCallback;
 
     /** Snap drag and resize to pixels of this interval. */
     snap?: number;
 
     /** Should resizing be enabled? */
-    resizable?: ResizableDirection;
+    resizable?: boolean;
 
     /** Should rotation be enabled? */
     rotatable?: boolean;
@@ -126,13 +127,19 @@ export class Positionable extends React.Component<
     }
 
     public render() {
-        const { render } = this.props;
+        const { children, render } = this.props;
 
-        return render({
+        const passedProps = {
             coverAllStyle: COVER_ALL_STYLE,
             position: this.state,
             refHandlers: this.refHandlers,
-        });
+        };
+
+        return isFunction(render)
+            ? render(passedProps)
+            : isFunction(children)
+                ? children(passedProps)
+                : null;
     }
 
     /**
@@ -186,9 +193,7 @@ export class Positionable extends React.Component<
         }
 
         if (resizable) {
-            const resizeObservableConfigs = calculateResizeObservableConfigs(
-                resizable
-            );
+            const resizeObservableConfigs = calculateResizeObservableConfigs();
 
             resizeObservableConfigs.forEach(config => {
                 const handle = this.refHandlers[config.refHandlerName].current;

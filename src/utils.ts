@@ -1,10 +1,11 @@
 import { applyToPoint, fromString } from 'transformation-matrix';
+
 import {
     Coordinates,
     CoordinatesStrings,
     Dimensions,
     Position,
-    ResizableDirection,
+    ResizableHandleLocation,
 } from './types';
 
 /**
@@ -191,14 +192,6 @@ export const snapObjectValues = (snapTo?: number) => <T extends {}>(
     );
 };
 
-type DirectionHandleLocations = { [key in ResizableDirection]: string[] };
-
-const directionHandleLocations: DirectionHandleLocations = {
-    horizontal: ['e', 'w'],
-    vertical: ['n', 's'],
-    both: ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'],
-};
-
 interface ObservableConfig {
     refHandlerName: string;
     top: boolean;
@@ -207,26 +200,32 @@ interface ObservableConfig {
     left: boolean;
 }
 
+const RESIZE_HANDLE_LOCATIONS: ResizableHandleLocation[] = [
+    'n',
+    'ne',
+    'e',
+    'se',
+    's',
+    'sw',
+    'w',
+    'nw',
+];
+
 export const calculateResizeObservableConfigs = (
-    resizable: ResizableDirection | undefined
-): ObservableConfig[] => {
-    if (!resizable) {
-        return [];
-    }
-
-    const directions = directionHandleLocations[resizable];
-
-    return directions.map(direction => ({
+    handleLocations: ResizableHandleLocation[] = RESIZE_HANDLE_LOCATIONS
+): ObservableConfig[] =>
+    handleLocations.map(direction => ({
         refHandlerName: `${direction}Resize`,
         top: /n/.test(direction),
         right: /e/.test(direction),
         bottom: /s/.test(direction),
         left: /w/.test(direction),
     }));
-};
+
+const ROTATE_HANDLE_LOCATIONS = ['ne', 'se', 'sw', 'nw'];
 
 export const calculateRotateObservableConfigs = (): ObservableConfig[] =>
-    ['ne', 'se', 'sw', 'nw'].map(direction => ({
+    ROTATE_HANDLE_LOCATIONS.map(direction => ({
         refHandlerName: `${direction}Rotate`,
         top: /n/.test(direction),
         right: /e/.test(direction),
@@ -234,7 +233,11 @@ export const calculateRotateObservableConfigs = (): ObservableConfig[] =>
         left: /w/.test(direction),
     }));
 
-export const corners = (position: Position, tm: Matrix) => {
+/**
+ * Calculate where the four corners of an HTML Element
+ * will be after applying CSS transformations.
+ */
+export const visualCorners = (position: Position, tm: Matrix) => {
     const halfWidth = position.width / 2;
     const halfHeight = position.height / 2;
 
@@ -273,3 +276,9 @@ export const corners = (position: Position, tm: Matrix) => {
  */
 export const round = (value: number, precision: number = 1): number =>
     +value.toFixed(precision);
+
+/**
+ * Check if a variable is a function.
+ */
+export const isFunction = (f: any): f is Function =>
+    f && {}.toString.call(f) === '[object Function]';
