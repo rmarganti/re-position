@@ -1,11 +1,7 @@
-# React-Positionable
+# re-position
 
-Drag, resize, and rotate all in one flexible component.
+Drag, resize, and rotate all in one flexible React component.
 
-## Motivation
-
-There are other libraries that offer dragging, resizing, and rotation individually.
-However, none of them elegantly combine all three. Additionally, no libraries
-handle CSS transformations very well. Most dragging and resizing libraries will
-not work as expected when rotation gets involved, due to the semi-complicated
-math that has to be done.
+Due to the nature of how browsers do CSS transform calculations, combining
+intuitive resize and rotation handles is harder than you would imagine
+(matrix math anyone?). Let `re-position` do the hard work for you.

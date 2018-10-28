@@ -50,17 +50,9 @@ export interface PositionableProps {
 type RenderCallback = (args: PositionableComponentProps) => JSX.Element;
 
 export interface PositionableComponentProps {
-    coverAllStyle: typeof COVER_ALL_STYLE;
     position: PositionAndRotationStrings;
     refHandlers: Positionable['refHandlers'];
 }
-
-const COVER_ALL_STYLE = {
-    left: '0%',
-    top: '0%',
-    width: '100%',
-    height: '100%',
-};
 
 export class Positionable extends React.Component<
     PositionableProps,
@@ -130,7 +122,6 @@ export class Positionable extends React.Component<
         const { children, render } = this.props;
 
         const passedProps = {
-            coverAllStyle: COVER_ALL_STYLE,
             position: this.state,
             refHandlers: this.refHandlers,
         };

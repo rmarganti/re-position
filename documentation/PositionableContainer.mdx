@@ -9,6 +9,9 @@ import PositionableContainer from '../src/PositionableContainer';
 
 # PositionableContainer
 
+`PositionableContainer` is an absolutely positioned container element, a `div`
+by default, with rotation and resize handles. It should cover most use cases.
+
 ## Example Usage
 
 <Playground style={{
@@ -18,6 +21,7 @@ import PositionableContainer from '../src/PositionableContainer';
     position: 'relative',
 }}>
     <PositionableContainer
+        Element="span"
         movable
         resizable="both"
         rotatable
@@ -28,23 +32,30 @@ import PositionableContainer from '../src/PositionableContainer';
             width: '40%',
             rotation: '0deg',
         }}
+        style={{
+            backgroundImage: 'url(https://picsum.photos/500/300)',
+            backgroundPosition: 'center',
+            backgroundSize: 'cover',
+        }}
     >
-        <div
+        <p
             style={{
-                backgroundImage: 'url(https://picsum.photos/500/300)',
-                backgroundPosition: 'center',
-                backgroundSize: 'cover',
-                backgroundColor: '#c0ffee',
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                bottom: 0,
-                right: 0,
+                fontSize: '1.25em',
+                margin: '1em',
+                color: '#fff',
+                textShadow: '2px 2px 5px rgba(0, 0, 0, 0.5)'
             }}
-        />
+        >
+            re-position
+        </p>
     </PositionableContainer>
 </Playground>
 
 ## Props
 
 <PropsTable of={PositionableContainer} />
+
+## The Transform Box
+
+Note that the transform box is rendered as a sibling to `PositionableContainer`.
+This allows it to appear above any other adjacent elements.

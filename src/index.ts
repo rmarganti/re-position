@@ -9,6 +9,7 @@ export { default as PositionableContainer } from './PositionableContainer';
  */
 export { default as ResizeHandle } from './ResizeHandle';
 export { default as RotateHandle } from './RotateHandle';
+export { default as TransformBox } from './TransformBox';
 
 /**
  * Types

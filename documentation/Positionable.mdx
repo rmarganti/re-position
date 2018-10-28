@@ -6,7 +6,9 @@ order: 1
 
 # Positionable
 
-`Positionable`
+`Positionable` doesn't provide a container or transform handles. Instead it
+provides the current position via render props. It requires a bit more work
+out of the box but is infinitely more flexible.
 
 ## Example Usage
 
@@ -29,8 +31,8 @@ import Positionable from '../src/Positionable';
         position={{
             left: '0%',
             top: '0%',
-            height: '40%',
-            width: '40%',
+            height: '25%',
+            width: '25%',
             rotation: '0deg',
         }}
     >
@@ -38,8 +40,9 @@ import Positionable from '../src/Positionable';
             <div
                 ref={refHandlers.container}
                 style={Object.assign({}, position, {
-                    backgroundColor: "#ddd",
+                    display: 'inline-block',
                     position: 'relative',
+                    backgroundColor: "#ddd",
                 })}
             >
                 <span>Hello!</span>
@@ -58,8 +61,56 @@ import Positionable from '../src/Positionable';
             </div>
         )}
     </Positionable>
+
+    <div style={{
+        display: 'inline-block',
+        width: '25%',
+        height: '25%',
+        marginLeft: '1em',
+        backgroundColor: '#d7d7d7',
+    }}>
+        Non-Positionable div
+    </div>
 </Playground>
 
 ## Props
 
 <PropsTable of={Positionable} />
+
+## Render Callback
+
+You can use Positionable by provided a function as `children` or via the
+`render` props. Both receive an object containing the current position
+(`position`) and the ref handlers (`refHandlers`).
+
+### Children
+
+```ts
+    <Positionable>
+        {({ position, refHandlers }) => (
+            <div ref={refHandlers.container} style={position} />
+        )}
+    </Positionable>
+```
+
+### Render Prop
+
+```ts
+    <Positionable
+        render={({ position, refHandlers }) => (
+            <div ref={refHandlers.container} style={position} />
+        )}
+    />
+```
+
+## Ref Handlers
+
+Positionable provides ref handlers for the container element, 4 corner rotate
+elements, and 8 resize directions elements. The only required ref is for the
+container. The available refs are attached to the `refHandlers` property on the
+render callback:
+
+* `container`
+* `nResize` `neResize` `eResize` `seResize`
+  `sResize` `swResize` `wResize` `nwResize`
+* `neRotate` `seRotate` `swRotate` `nwRotate`
