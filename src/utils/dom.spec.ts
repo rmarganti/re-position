@@ -1,12 +1,12 @@
 import { identity, rotateDEG } from 'transformation-matrix';
 
-import { Position } from './types';
-import { visualCorners } from './utils';
+import { OffsetAndSize } from '../types';
+import { visualCorners } from './dom';
 
-describe('utils', () => {
+describe('utils/dom', () => {
     describe('visualCorners', () => {
         it('calculate the visual corners of non-rotated element', () => {
-            const centeredOnAxis: Position = {
+            const centeredOnAxis: OffsetAndSize = {
                 left: -10,
                 top: -10,
                 width: 20,
@@ -23,7 +23,7 @@ describe('utils', () => {
             expect(centeredOnAccessCorners.sw).toEqual({ x: -10, y: 10 });
             expect(centeredOnAccessCorners.nw).toEqual({ x: -10, y: -10 });
 
-            const allPositive: Position = {
+            const allPositive: OffsetAndSize = {
                 left: 10,
                 top: 10,
                 width: 20,
@@ -39,7 +39,7 @@ describe('utils', () => {
         });
 
         it('calculates the visual corners of a rotated element', () => {
-            const centeredOnAxis: Position = {
+            const centeredOnAxis: OffsetAndSize = {
                 left: -10,
                 top: -10,
                 width: 20,
@@ -56,7 +56,7 @@ describe('utils', () => {
             expect(centeredOnAccessCorners.sw).toEqual({ x: -10, y: -10 });
             expect(centeredOnAccessCorners.nw).toEqual({ x: 10, y: -10 });
 
-            const allPositive: Position = {
+            const allPositive: OffsetAndSize = {
                 left: 10,
                 top: 10,
                 width: 20,

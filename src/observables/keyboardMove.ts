@@ -1,15 +1,12 @@
 import { timer } from 'rxjs';
 import { filter, map, switchMap, takeUntil } from 'rxjs/operators';
 
-import { Coordinates } from '../types';
-import {
-    convertPositionToPercent,
-    positionOfElement,
-    sizeOfElement,
-} from '../utils';
+import { Offset } from '../types';
+import { offsetAndSizeOfElement, sizeOfElement } from '../utils/dom';
+import { convertOffsetToPercent } from '../utils/misc';
 import { keyDowns$, keyUps$ } from './misc';
 
-const ARROW_KEYS: { [index: string]: Coordinates } = {
+const ARROW_KEYS: { [index: string]: Offset } = {
     ArrowLeft: { left: -1, top: 0 },
     ArrowRight: { left: 1, top: 0 },
     ArrowUp: { left: 0, top: -1 },
@@ -47,7 +44,7 @@ export const createKeyboardMoveObservable = ({
                 takeUntil(arrowUp$),
                 map(addToPosition(e, element)),
                 map(
-                    convertPositionToPercent(
+                    convertOffsetToPercent(
                         shouldConvertToPercent,
                         element.parentElement!
                     )
@@ -65,8 +62,8 @@ export const createKeyboardMoveObservable = ({
 const addToPosition = (
     e: KeyboardEvent,
     element: HTMLElement
-) => (): Coordinates => {
-    const position = positionOfElement(element);
+) => (): Offset => {
+    const position = offsetAndSizeOfElement(element);
     const sizeOfParent = sizeOfElement(element.parentElement!);
     const onePercentHorizontal = sizeOfParent.width * 0.01;
     const onePercentVertical = sizeOfParent.height * 0.01;

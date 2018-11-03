@@ -1,23 +1,26 @@
 import { fromEvent, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, map, switchMap } from 'rxjs/operators';
 
+import { Matrix } from 'transformation-matrix';
 import {
     AngleAndDistance,
-    Dimensions,
-    Position,
-    PositionStrings,
+    OffsetAndSize,
+    OffsetAndSizeStrings,
+    Size,
 } from '../types';
+import {
+    offsetAndSizeOfElement,
+    rotationOfElement,
+    scaleOfElement,
+    transformMatrixOfElement,
+    visualCorners,
+} from '../utils/dom';
 import {
     angleBetweenPoints,
     distanceBetweenPoints,
-    positionOfElement,
-    rotationOfElement,
     round,
-    scaleOfElement,
     snapObjectValues,
-    transformMatrixOfElement,
-    visualCorners,
-} from '../utils';
+} from '../utils/misc';
 import {
     documentMouseMove$,
     documentMouseUp$,
@@ -33,7 +36,7 @@ interface ResizeObservableOptions {
     bottom?: boolean;
     left?: boolean;
     shouldConvertToPercent?: boolean;
-    snap?: number;
+    snapTo?: number;
 }
 
 /*
@@ -48,12 +51,12 @@ export const createResizeObservable = ({
     handle,
     onComplete,
     shouldConvertToPercent = true,
-    snap,
+    snapTo,
     top,
     right,
     bottom,
     left,
-}: ResizeObservableOptions): Observable<PositionStrings> => {
+}: ResizeObservableOptions): Observable<OffsetAndSizeStrings> => {
     const mouseDown$ = fromEvent<MouseEvent>(handle, 'mousedown');
 
     return mouseDown$.pipe(
@@ -62,7 +65,7 @@ export const createResizeObservable = ({
             e.preventDefault();
             e.stopPropagation();
 
-            const oldPosition = positionOfElement(element);
+            const oldOffsetAndSize = offsetAndSizeOfElement(element);
             const oldRotation = rotationOfElement(element);
             const transformMatrix = transformMatrixOfElement(element);
             const scale = scaleOfElement(element);
@@ -77,8 +80,8 @@ export const createResizeObservable = ({
                 ),
                 map(horizontalAndVerticalChange(oldRotation)),
                 map(
-                    applyToOriginalDimensions(
-                        oldPosition,
+                    applyToOriginalSize(
+                        oldOffsetAndSize,
                         top,
                         right,
                         bottom,
@@ -86,17 +89,17 @@ export const createResizeObservable = ({
                     )
                 ),
                 map(limitToTwentyPxMinimum),
-                map(snapObjectValues(snap)),
+                map(snapObjectValues(snapTo)),
                 distinctUntilChanged(),
                 map(
                     lockAspectRatio(
                         e.shiftKey,
-                        oldPosition.width / oldPosition.height
+                        oldOffsetAndSize.width / oldOffsetAndSize.height
                     )
                 ),
                 map(
                     offsetForVisualConsistency(
-                        oldPosition,
+                        oldOffsetAndSize,
                         transformMatrix,
                         top,
                         right,
@@ -105,7 +108,7 @@ export const createResizeObservable = ({
                     )
                 ),
                 map(
-                    convertDimensionsToPercent(
+                    convertSizeToPercent(
                         shouldConvertToPercent,
                         element.parentElement!
                     )
@@ -140,7 +143,7 @@ const angleAndDistanceFromPointToMouseEvent = (
  */
 const horizontalAndVerticalChange = (oldRotation: number) => (
     angleAndDistanceChange: AngleAndDistance
-): Dimensions => {
+): Size => {
     const angleRadians =
         ((angleAndDistanceChange.angle - oldRotation) * Math.PI) / 180;
 
@@ -151,32 +154,34 @@ const horizontalAndVerticalChange = (oldRotation: number) => (
 };
 
 /**
- * Apply horizontal and vertical change to old element's dimensions.
+ * Apply horizontal and vertical change to old element's Size.
  */
-const applyToOriginalDimensions = (
-    oldPosition: Position,
+const applyToOriginalSize = (
+    oldOffsetAndSize: OffsetAndSize,
     top: boolean | undefined,
     right: boolean | undefined,
     bottom: boolean | undefined,
     left: boolean | undefined
-) => (change: Dimensions): Position => {
+) => (change: Size): OffsetAndSize => {
     const positionLeft = left
-        ? oldPosition.left + change.width
-        : oldPosition.left;
+        ? oldOffsetAndSize.left + change.width
+        : oldOffsetAndSize.left;
 
-    const positionTop = top ? oldPosition.top + change.height : oldPosition.top;
+    const positionTop = top
+        ? oldOffsetAndSize.top + change.height
+        : oldOffsetAndSize.top;
 
     const positionWidth = left
-        ? oldPosition.width - change.width
+        ? oldOffsetAndSize.width - change.width
         : right
-            ? oldPosition.width + change.width
-            : oldPosition.width;
+            ? oldOffsetAndSize.width + change.width
+            : oldOffsetAndSize.width;
 
     const positionHeight = top
-        ? oldPosition.height - change.height
+        ? oldOffsetAndSize.height - change.height
         : bottom
-            ? oldPosition.height + change.height
-            : oldPosition.height;
+            ? oldOffsetAndSize.height + change.height
+            : oldOffsetAndSize.height;
 
     return {
         left: positionLeft,
@@ -187,21 +192,21 @@ const applyToOriginalDimensions = (
 };
 
 /**
- * Limit the dimensions to a twenty pixel minimum height and width.
+ * Limit the Size to a twenty pixel minimum height and width.
  */
-const limitToTwentyPxMinimum = (position: Position): Position => ({
+const limitToTwentyPxMinimum = (position: OffsetAndSize): OffsetAndSize => ({
     ...position,
     height: Math.max(20, position.height),
     width: Math.max(20, position.width),
 });
 
 /**
- * If `shouldLock` is `true`, the new dimensions
+ * If `shouldLock` is `true`, the new Size
  * will be forced into the provided aspect ratio.
  */
 const lockAspectRatio = (shouldLock: boolean, aspectRatio: number) => (
-    position: Position
-): Position => {
+    position: OffsetAndSize
+): OffsetAndSize => {
     if (!shouldLock) {
         return position;
     }
@@ -228,15 +233,15 @@ const lockAspectRatio = (shouldLock: boolean, aspectRatio: number) => (
  * the perceived visual position the same.
  */
 const offsetForVisualConsistency = (
-    oldPosition: Position,
+    oldOffsetAndSize: OffsetAndSize,
     transformMatrix: Matrix,
     top?: boolean,
     right?: boolean,
     bottom?: boolean,
     left?: boolean
-) => (newPosition: Position): Position => {
-    const oldCorners = visualCorners(oldPosition, transformMatrix);
-    const newCorners = visualCorners(newPosition, transformMatrix);
+) => (newOffsetAndSize: OffsetAndSize): OffsetAndSize => {
+    const oldCorners = visualCorners(oldOffsetAndSize, transformMatrix);
+    const newCorners = visualCorners(newOffsetAndSize, transformMatrix);
 
     let changeX: number;
     let changeY: number;
@@ -256,20 +261,20 @@ const offsetForVisualConsistency = (
     }
 
     return {
-        left: newPosition.left - changeX,
-        top: newPosition.top - changeY,
-        width: newPosition.width,
-        height: newPosition.height,
+        left: newOffsetAndSize.left - changeX,
+        top: newOffsetAndSize.top - changeY,
+        width: newOffsetAndSize.width,
+        height: newOffsetAndSize.height,
     };
 };
 
 /**
- * Convert pixel dimensions to a percentage of the parent's dimensions.
+ * Convert pixel Size to a percentage of the parent's Size.
  */
-const convertDimensionsToPercent = (
+const convertSizeToPercent = (
     shouldConvertToPercent: boolean,
     parent: HTMLElement
-) => (position: Position): PositionStrings =>
+) => (position: OffsetAndSize): OffsetAndSizeStrings =>
     shouldConvertToPercent
         ? {
               left: `${round((position.left / parent.offsetWidth) * 100)}%`,

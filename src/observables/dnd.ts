@@ -7,23 +7,20 @@ import {
     switchMap,
 } from 'rxjs/operators';
 
-import { Coordinates, CoordinatesStrings } from '../types';
-import {
-    convertPositionToPercent,
-    scaleOfElement,
-    snapObjectValues,
-} from '../utils';
+import { Offset, OffsetStrings } from '../types';
+import { scaleOfElement } from '../utils/dom';
+import { convertOffsetToPercent, snapObjectValues } from '../utils/misc';
 import {
     documentMouseMove$,
     documentMouseUp$,
     requestAnimationFramesUntil,
 } from './misc';
 
-interface MoveObservableOptions {
+interface DndObservableOptions {
     element: HTMLElement;
     onComplete?: () => void;
     shouldConvertToPercent: boolean;
-    snap?: number;
+    snapTo?: number;
 }
 
 /**
@@ -34,8 +31,8 @@ export const createDndObservable = ({
     element,
     onComplete,
     shouldConvertToPercent = true,
-    snap,
-}: MoveObservableOptions): Observable<CoordinatesStrings> => {
+    snapTo,
+}: DndObservableOptions): Observable<OffsetStrings> => {
     const mouseDown$ = fromEvent(element, 'mousedown');
 
     return mouseDown$.pipe(
@@ -51,10 +48,10 @@ export const createDndObservable = ({
                 map(distanceFromPointToMouseEvent(e.clientX, e.clientY, scale)),
                 skipWhile(hasntMovedFivePixels),
                 map(addDistanceTo(element.offsetLeft, element.offsetTop)),
-                map(snapObjectValues(snap)),
+                map(snapObjectValues(snapTo)),
                 distinctUntilChanged(),
                 map(
-                    convertPositionToPercent(
+                    convertOffsetToPercent(
                         shouldConvertToPercent,
                         element.parentElement!
                     )
@@ -77,7 +74,7 @@ const distanceFromPointToMouseEvent = (
     originX: number,
     originY: number,
     scale: number
-) => (e: MouseEvent): Coordinates => {
+) => (e: MouseEvent): Offset => {
     const leftChange = (e.clientX - originX) / scale;
     const topChange = (e.clientY - originY) / scale;
 
@@ -117,14 +114,14 @@ const distanceFromPointToMouseEvent = (
 /**
  * Determine if the mouse has moved 5 pixels or more in any direction.
  */
-const hasntMovedFivePixels = (change: Coordinates) =>
+const hasntMovedFivePixels = (change: Offset) =>
     Math.sqrt(change.top * change.top + change.left * change.left) < 5;
 
 /**
  * Add the change in mouse position to an origin point.
  */
 const addDistanceTo = (originX: number, originY: number) => (
-    change: Coordinates
+    change: Offset
 ) => ({
     left: originX + change.left,
     top: originY + change.top,

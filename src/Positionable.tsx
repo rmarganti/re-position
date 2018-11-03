@@ -8,15 +8,15 @@ import {
     createResizeObservable,
     createRotateObservable,
 } from './observables';
-import { PositionAndRotationStrings } from './types';
+import { PositionStrings } from './types';
 import {
     calculateResizeObservableConfigs,
     calculateRotateObservableConfigs,
     isFunction,
     objectsAreEqual,
-} from './utils';
+} from './utils/misc';
 
-type PositionableState = PositionAndRotationStrings;
+type PositionableState = PositionStrings;
 
 export interface PositionableProps {
     /**
@@ -29,16 +29,16 @@ export interface PositionableProps {
     movable?: boolean;
 
     /** Callback to notify when Positioning has changed */
-    onUpdate?: (sizing: PositionAndRotationStrings) => void;
+    onUpdate?: (sizing: PositionStrings) => void;
 
     /** Current Positioning (left, top, width, height, rotation) */
-    position: PositionAndRotationStrings;
+    position: PositionStrings;
 
     /** Render Prop alternative to using `children` */
     render?: RenderCallback;
 
     /** Snap drag and resize to pixels of this interval. */
-    snap?: number;
+    snapTo?: number;
 
     /** Should resizing be enabled? */
     resizable?: boolean;
@@ -50,7 +50,7 @@ export interface PositionableProps {
 type RenderCallback = (args: PositionableComponentProps) => JSX.Element;
 
 export interface PositionableComponentProps {
-    position: PositionAndRotationStrings;
+    position: PositionStrings;
     refHandlers: Positionable['refHandlers'];
 }
 
@@ -151,7 +151,7 @@ export class Positionable extends React.Component<
      * Handle subscribing to and unsubscribing from Observables.
      */
     private buildSubscriptions() {
-        const { disabled, movable, resizable, rotatable, snap } = this.props;
+        const { disabled, movable, resizable, rotatable, snapTo } = this.props;
         const { left, width } = this.state;
 
         this.destroy$.next();
@@ -169,7 +169,7 @@ export class Positionable extends React.Component<
                 element: this.refHandlers.container.current,
                 onComplete: this.handleUpdate,
                 shouldConvertToPercent: left.includes('%'),
-                snap,
+                snapTo,
             })
                 .pipe(takeUntil(this.destroy$))
                 .subscribe(newCoords => this.setState(newCoords));
@@ -201,7 +201,7 @@ export class Positionable extends React.Component<
                         bottom: config.bottom,
                         left: config.left,
                         shouldConvertToPercent: width.includes('%'),
-                        snap,
+                        snapTo,
                     })
                         .pipe(takeUntil(this.destroy$))
                         .subscribe(newPosition => this.setState(newPosition));

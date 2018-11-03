@@ -2,7 +2,8 @@ import { fromEvent, Observable } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 
 import { Rotation } from '../types';
-import { angleBetweenPoints, rotationOfElement, round } from '../utils';
+import { rotationOfElement } from '../utils/dom';
+import { angleBetweenPoints, round } from '../utils/misc';
 import {
     documentMouseMove$,
     documentMouseUp$,

@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { Positionable } from './Positionable';
 import TransformBox from './TransformBox';
-import { PositionAndRotationStrings, ResizableHandleLocation } from './types';
+import { PositionStrings, ResizableHandleLocation } from './types';
 
 export interface PositionableContainerProps {
     className?: string;
@@ -20,10 +20,10 @@ export interface PositionableContainerProps {
     movable?: boolean;
 
     /** Callback to notify when Positioning has changed */
-    onUpdate?: (sizing: PositionAndRotationStrings) => void;
+    onUpdate?: (position: PositionStrings) => void;
 
     /** Current Positioning (left, top, width, height, rotation) */
-    position: PositionAndRotationStrings;
+    position: PositionStrings;
 
     /** Render Prop alternative to using `children` */
     render: () => JSX.Element;
@@ -38,7 +38,7 @@ export interface PositionableContainerProps {
     rotatable?: boolean;
 
     /** Snap drag and resize to pixels of this interval. */
-    snap?: number;
+    snapTo?: number;
 
     style: React.CSSProperties;
 }
@@ -53,7 +53,7 @@ const PositionableContainer: React.SFC<PositionableContainerProps> = ({
     position,
     onUpdate,
     render,
-    snap,
+    snapTo,
     style,
     ...rest
 }) => (
@@ -64,7 +64,7 @@ const PositionableContainer: React.SFC<PositionableContainerProps> = ({
         position={position}
         resizable={!!resizable}
         rotatable={rotatable}
-        snap={snap}
+        snapTo={snapTo}
         render={({ position: currentPosition, refHandlers }) => (
             <>
                 <Element

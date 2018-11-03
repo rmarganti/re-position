@@ -8,7 +8,7 @@ import RotateHandle from './RotateHandle';
 import {
     calculateResizeObservableConfigs,
     calculateRotateObservableConfigs,
-} from './utils';
+} from './utils/misc';
 
 interface TransformBoxProps extends React.HTMLAttributes<HTMLDivElement> {
     position: PositionableComponentProps['position'];

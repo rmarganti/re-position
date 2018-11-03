@@ -1,27 +1,27 @@
-export type PositionAndRotationStrings = AsStrings<Position & Rotation>;
-
-export type Position = Coordinates & Dimensions;
 export type PositionStrings = AsStrings<Position>;
+export type Position = Offset & Size & Rotation;
 
-export interface AngleAndDistance {
-    angle: number;
-    distance: number;
-}
+export type OffsetAndSizeStrings = AsStrings<OffsetAndSize>;
+export type OffsetAndSize = Offset & Size;
 
-export interface Coordinates {
+export type OffsetStrings = AsStrings<Offset>;
+export interface Offset {
     left: number;
     top: number;
 }
 
-export type CoordinatesStrings = AsStrings<Coordinates>;
-
-export interface Dimensions {
+export interface Size {
     height: number;
     width: number;
 }
 
 export interface Rotation {
     rotation: string;
+}
+
+export interface AngleAndDistance {
+    angle: number;
+    distance: number;
 }
 
 export type ResizableHandleLocation =
