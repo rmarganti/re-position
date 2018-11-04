@@ -1,0 +1,43 @@
+---
+name: ResizeHandle
+route: /resize-handle
+order: 2
+---
+
+import { PropsTable } from 'docz'
+import { ResizeHandle } from '../src';
+import Playground from './PatchedPlayground'
+
+# ResizeHandle
+
+A simple handle for indicating that a side/corner of an element is resizable.
+Used internally by `<TransformBox />`.
+
+## Example Usage
+
+<Playground>
+    <div
+        style={{
+            position: 'relative',
+            width: '200px',
+            height: '200px',
+            margin: 'auto',
+            backgroundColor: '#f8f8f8'
+        }}
+    >
+        <ResizeHandle left top />
+        <ResizeHandle right top />
+        <ResizeHandle left bottom />
+        <ResizeHandle right bottom />
+
+        <ResizeHandle top />
+        <ResizeHandle right />
+        <ResizeHandle bottom />
+        <ResizeHandle left />
+    </div>
+</Playground>
+
+
+## Props
+
+<PropsTable of={ResizeHandle} />

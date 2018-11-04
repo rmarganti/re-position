@@ -62,8 +62,18 @@ export const createRotateObservable = ({
     );
 };
 
+/**
+ * A function that calculates the angle from a non-exposed point
+ * to the point provided as parameters when calling the function.
+ */
+type AngleFromPointCalculator = (x: number, y: number) => number;
+
+/**
+ * Calculate the final rotation based on the mouse's angle from
+ * the center axis and original rotation of the html element.
+ */
 const translateRotation = (
-    angleCalculator: (x: number, y: number) => number,
+    angleCalculator: AngleFromPointCalculator,
     initialAngle: number
 ) => (e: MouseEvent): Rotation => ({
     rotation: `${round(

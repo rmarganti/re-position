@@ -9,7 +9,10 @@ import {
 
 import { Offset, OffsetStrings } from '../types';
 import { scaleOfElement } from '../utils/dom';
-import { convertOffsetToPercent, snapObjectValues } from '../utils/misc';
+import {
+    convertOffsetToPercentOrPixels,
+    snapObjectValues,
+} from '../utils/misc';
 import {
     documentMouseMove$,
     documentMouseUp$,
@@ -51,7 +54,7 @@ export const createDndObservable = ({
                 map(snapObjectValues(snapTo)),
                 distinctUntilChanged(),
                 map(
-                    convertOffsetToPercent(
+                    convertOffsetToPercentOrPixels(
                         shouldConvertToPercent,
                         element.parentElement!
                     )

@@ -26,24 +26,8 @@ export const sizeOfElement = (element: HTMLElement): Size => ({
  * Gets the current rotation of an HTML element.
  */
 export const rotationOfElement = (element: HTMLElement): number => {
-    const transform = transformMatrixStringOfElement(element);
-
-    if (transform === 'none') {
-        return 0;
-    }
-
-    // Matches first two numbers in matrix
-    // Ex: matrix(0.624384, 0.781117, -0.781117, 0.624384, 0, 0)
-    const matches = transform.match(/\(([0-9.-]+), ([0-9.-]+)/);
-
-    if (!matches) {
-        return 0;
-    }
-
-    const a = +matches[1];
-    const b = +matches[2];
-
-    const radians = Math.atan2(b, a);
+    const transform = transformMatrixOfElement(element);
+    const radians = Math.atan2(transform.b, transform.a);
 
     return +(radians * (180 / Math.PI)).toFixed(1);
 };

@@ -24,7 +24,7 @@ export interface AngleAndDistance {
     distance: number;
 }
 
-export type ResizableHandleLocation =
+export type ResizeHandleLocation =
     | 'n'
     | 'ne'
     | 'e'

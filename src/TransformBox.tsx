@@ -25,7 +25,6 @@ const Wrapper = styled.div`
 `;
 
 const TransformBox: React.SFC<TransformBoxProps> = ({
-    children,
     position,
     refHandlers,
     resizable,

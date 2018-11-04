@@ -10,7 +10,8 @@
         "build": "rimraf build && npm run build-lib && npm run build-docs",
         "build-docs": "docz build",
         "build-lib": "tsc",
-        "dev": "docz dev"
+        "dev": "docz dev",
+        "test": "jest"
     },
     "repository": "https://github.com/rmarganti/re-position",
     "author": "Ryan Marganti <ryanmarganti@soulsizzle.com>",
@@ -30,6 +31,7 @@
         "docz": "^0.12.5",
         "docz-theme-default": "^0.12.5",
         "enzyme": "^3.3.0",
+        "enzyme-adapter-react-16": "^1.6.0",
         "jest": "^22.4.3",
         "prettier": "^1.13.5",
         "react": "^16.6.0",
@@ -42,16 +44,18 @@
         "typescript": "^2.8.1"
     },
     "jest": {
-        "transform": {
-            ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
-        },
-        "testEnvironment": "node",
-        "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx)$",
         "moduleFileExtensions": [
             "ts",
             "tsx",
             "js"
-        ]
+        ],
+        "setupTestFrameworkScriptFile": "<rootDir>/testingConfig.ts",
+        "testEnvironment": "jsdom",
+        "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx)$",
+        "testURL": "http://localhost",
+        "transform": {
+            ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+        }
     },
     "peerDependencies": {
         "react": "^15.6.0",

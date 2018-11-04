@@ -3,10 +3,10 @@ import { filter, map, switchMap, takeUntil } from 'rxjs/operators';
 
 import { Offset } from '../types';
 import { offsetAndSizeOfElement, sizeOfElement } from '../utils/dom';
-import { convertOffsetToPercent } from '../utils/misc';
+import { convertOffsetToPercentOrPixels } from '../utils/misc';
 import { keyDowns$, keyUps$ } from './misc';
 
-const ARROW_KEYS: { [index: string]: Offset } = {
+const ARROW_KEY_DIRECTIONS: { [index: string]: Offset } = {
     ArrowLeft: { left: -1, top: 0 },
     ArrowRight: { left: 1, top: 0 },
     ArrowUp: { left: 0, top: -1 },
@@ -20,7 +20,7 @@ interface KeyboardMoveObservableOptions {
 }
 
 const isArrowKey = (e: KeyboardEvent) =>
-    Object.keys(ARROW_KEYS).indexOf(e.key) !== -1;
+    Object.keys(ARROW_KEY_DIRECTIONS).indexOf(e.key) !== -1;
 
 const arrowDown$ = keyDowns$.pipe(filter(isArrowKey));
 const arrowUp$ = keyUps$.pipe(filter(isArrowKey));
@@ -42,9 +42,9 @@ export const createKeyboardMoveObservable = ({
         switchMap(e => {
             const keyRepeat$ = timer(0, 200).pipe(
                 takeUntil(arrowUp$),
-                map(addToPosition(e, element)),
+                map(addToOffset(e, element)),
                 map(
-                    convertOffsetToPercent(
+                    convertOffsetToPercentOrPixels(
                         shouldConvertToPercent,
                         element.parentElement!
                     )
@@ -59,20 +59,24 @@ export const createKeyboardMoveObservable = ({
         })
     );
 
-const addToPosition = (
-    e: KeyboardEvent,
-    element: HTMLElement
-) => (): Offset => {
-    const position = offsetAndSizeOfElement(element);
+/*
+ * Adds 1% (10% if shift is pressed) to the offset of an HTML Element
+ * in the direction of the currently-pressed arrow key.
+ *
+ */
+const addToOffset = (e: KeyboardEvent, element: HTMLElement) => (): Offset => {
+    const offsetAndSize = offsetAndSizeOfElement(element);
     const sizeOfParent = sizeOfElement(element.parentElement!);
     const onePercentHorizontal = sizeOfParent.width * 0.01;
     const onePercentVertical = sizeOfParent.height * 0.01;
 
-    const movement = ARROW_KEYS[e.key];
+    const movement = ARROW_KEY_DIRECTIONS[e.key];
     const multiplier = e.shiftKey ? 5 : 1;
 
     return {
-        left: onePercentHorizontal * movement.left * multiplier + position.left,
-        top: onePercentVertical * movement.top * multiplier + position.top,
+        left:
+            onePercentHorizontal * movement.left * multiplier +
+            offsetAndSize.left,
+        top: onePercentVertical * movement.top * multiplier + offsetAndSize.top,
     };
 };

@@ -1,10 +1,48 @@
-import { identity, rotateDEG } from 'transformation-matrix';
+import {
+    identity,
+    rotate,
+    rotateDEG,
+    scale,
+    toCSS,
+} from 'transformation-matrix';
 
 import { OffsetAndSize } from '../types';
-import { visualCorners } from './dom';
+import { rotationOfElement, scaleOfElement, visualCorners } from './dom';
 
 describe('utils/dom', () => {
-    describe('visualCorners', () => {
+    describe('rotationOfElement()', () => {
+        it('correctly calculates the rotation of an HTML element', () => {
+            const div = document.createElement('div');
+            div.style.width = '100px';
+            div.style.height = '100px';
+            div.style.left = '100px';
+            div.style.top = '100px';
+            div.style.transform = toCSS(rotateDEG(45));
+
+            const degreeRotation = rotationOfElement(div);
+            expect(degreeRotation).toEqual(45);
+
+            div.style.transform = toCSS(rotate(3.14159));
+            const radianRotation = rotationOfElement(div);
+            expect(radianRotation).toEqual(180);
+        });
+    });
+
+    describe('scaleOfElement()', () => {
+        it('calculates the scale of an HTML element', () => {
+            const div = document.createElement('div');
+            div.style.width = '100px';
+            div.style.height = '100px';
+            div.style.left = '100px';
+            div.style.top = '100px';
+            div.style.transform = toCSS(scale(2));
+
+            const scaleAmount = scaleOfElement(div);
+            expect(scaleAmount).toEqual(2);
+        });
+    });
+
+    describe('visualCorners()', () => {
         it('calculate the visual corners of non-rotated element', () => {
             const centeredOnAxis: OffsetAndSize = {
                 left: -10,

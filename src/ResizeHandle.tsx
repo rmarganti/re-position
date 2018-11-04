@@ -49,7 +49,7 @@ const calculateCursor = (
 };
 
 const ResizeHandle = styled.div<ResizeHandleProps>`
-    ${(props: ResizeHandleProps) => css`
+    ${props => css`
         background-color: ${props.color};
         border: 1px solid ${props.borderColor};
         box-sizing: border-box;

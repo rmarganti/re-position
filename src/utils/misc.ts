@@ -1,4 +1,4 @@
-import { Offset, OffsetStrings, ResizableHandleLocation } from '../types';
+import { Offset, OffsetStrings, ResizeHandleLocation } from '../types';
 
 /**
  * Calculate the angle between two points..
@@ -54,18 +54,18 @@ export const objectsAreEqual = (a: {}, b: {}) => {
 /**
  * Convert new Offset to a percentage of an (parent) element.
  */
-export const convertOffsetToPercent = (
+export const convertOffsetToPercentOrPixels = (
     shouldConvertToPercent: boolean,
     parent: HTMLElement
-) => (position: Offset): OffsetStrings =>
+) => (offset: Offset): OffsetStrings =>
     shouldConvertToPercent
         ? {
-              left: `${round((position.left / parent.offsetWidth) * 100)}%`,
-              top: `${round((position.top / parent.offsetHeight) * 100)}%`,
+              left: `${round((offset.left / parent.offsetWidth) * 100)}%`,
+              top: `${round((offset.top / parent.offsetHeight) * 100)}%`,
           }
         : {
-              left: `${round(position.left)}px`,
-              top: `${round(position.top)}px`,
+              left: `${round(offset.left)}px`,
+              top: `${round(offset.top)}px`,
           };
 
 /**
@@ -103,7 +103,7 @@ interface ObservableConfig {
     left: boolean;
 }
 
-const RESIZE_HANDLE_LOCATIONS: ResizableHandleLocation[] = [
+const RESIZE_HANDLE_LOCATIONS: ResizeHandleLocation[] = [
     'n',
     'ne',
     'e',
@@ -114,8 +114,12 @@ const RESIZE_HANDLE_LOCATIONS: ResizableHandleLocation[] = [
     'nw',
 ];
 
+/**
+ * Generates configuration values useful for building resize observables.
+ * Configs are built for each side and corner (8 configs in total).
+ */
 export const calculateResizeObservableConfigs = (
-    handleLocations: ResizableHandleLocation[] = RESIZE_HANDLE_LOCATIONS
+    handleLocations: ResizeHandleLocation[] = RESIZE_HANDLE_LOCATIONS
 ): ObservableConfig[] =>
     handleLocations.map(direction => ({
         refHandlerName: `${direction}Resize`,
@@ -127,6 +131,10 @@ export const calculateResizeObservableConfigs = (
 
 const ROTATE_HANDLE_LOCATIONS = ['ne', 'se', 'sw', 'nw'];
 
+/**
+ * Generates configuration values useful for building rotate observables.
+ * Configs are built for each corner (4 configs in total).
+ */
 export const calculateRotateObservableConfigs = (): ObservableConfig[] =>
     ROTATE_HANDLE_LOCATIONS.map(direction => ({
         refHandlerName: `${direction}Rotate`,
@@ -137,7 +145,7 @@ export const calculateRotateObservableConfigs = (): ObservableConfig[] =>
     }));
 
 /**
- * Round a number to a given precision
+ * Round a number to a given precision.
  */
 export const round = (value: number, precision: number = 1): number =>
     +value.toFixed(precision);
