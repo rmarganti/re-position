@@ -1,5 +1,5 @@
 import { applyToPoint, fromString, Matrix } from 'transformation-matrix';
-import { OffsetAndSize, Size } from '../types';
+import { Offset, OffsetAndSize, Size } from '../types';
 
 /**
  * Get the full offset (left, top, width,
@@ -12,6 +12,14 @@ export const offsetAndSizeOfElement = (
     top: element.offsetTop,
     width: element.offsetWidth,
     height: element.offsetHeight,
+});
+
+/**
+ * Get the left and top offsets of an HTML element, relative to its parent.
+ */
+export const offsetOfElement = (element: HTMLElement): Offset => ({
+    left: element.offsetLeft,
+    top: element.offsetTop,
 });
 
 /**

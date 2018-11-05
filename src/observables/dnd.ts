@@ -8,7 +8,7 @@ import {
 } from 'rxjs/operators';
 
 import { Offset, OffsetStrings } from '../types';
-import { scaleOfElement } from '../utils/dom';
+import { offsetOfElement, scaleOfElement } from '../utils/dom';
 import {
     convertOffsetToPercentOrPixels,
     snapObjectValues,
@@ -48,9 +48,9 @@ export const createDndObservable = ({
             const scale = scaleOfElement(element);
 
             const move$ = documentMouseMove$.pipe(
-                map(distanceFromPointToMouseEvent(e.clientX, e.clientY, scale)),
+                map(changeFromPointToMouseEvent(e.clientX, e.clientY, scale)),
                 skipWhile(hasntMovedFivePixels),
-                map(addDistanceTo(element.offsetLeft, element.offsetTop)),
+                map(addOffsets(offsetOfElement(element))),
                 map(snapObjectValues(snapTo)),
                 distinctUntilChanged(),
                 map(
@@ -73,7 +73,7 @@ export const createDndObservable = ({
 /**
  * Calculates the distance from an origin point to a mouse event
  */
-const distanceFromPointToMouseEvent = (
+const changeFromPointToMouseEvent = (
     originX: number,
     originY: number,
     scale: number
@@ -123,9 +123,7 @@ const hasntMovedFivePixels = (change: Offset) =>
 /**
  * Add the change in mouse position to an origin point.
  */
-const addDistanceTo = (originX: number, originY: number) => (
-    change: Offset
-) => ({
-    left: originX + change.left,
-    top: originY + change.top,
+const addOffsets = (origin: Offset) => (change: Offset) => ({
+    left: origin.left + change.left,
+    top: origin.top + change.top,
 });

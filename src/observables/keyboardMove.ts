@@ -6,18 +6,19 @@ import { offsetAndSizeOfElement, sizeOfElement } from '../utils/dom';
 import { convertOffsetToPercentOrPixels } from '../utils/misc';
 import { keyDowns$, keyUps$ } from './misc';
 
+interface KeyboardMoveObservableOptions {
+    element: HTMLElement;
+    onComplete?: () => void;
+    shouldConvertToPercent: boolean;
+}
+
+// These keyboard keys result in these movements.
 const ARROW_KEY_DIRECTIONS: { [index: string]: Offset } = {
     ArrowLeft: { left: -1, top: 0 },
     ArrowRight: { left: 1, top: 0 },
     ArrowUp: { left: 0, top: -1 },
     ArrowDown: { left: 0, top: 1 },
 };
-
-interface KeyboardMoveObservableOptions {
-    element: HTMLElement;
-    onComplete?: () => void;
-    shouldConvertToPercent: boolean;
-}
 
 const isArrowKey = (e: KeyboardEvent) =>
     Object.keys(ARROW_KEY_DIRECTIONS).indexOf(e.key) !== -1;
@@ -64,7 +65,10 @@ export const createKeyboardMoveObservable = ({
  * in the direction of the currently-pressed arrow key.
  *
  */
-const addToOffset = (e: KeyboardEvent, element: HTMLElement) => (): Offset => {
+export const addToOffset = (
+    e: KeyboardEvent,
+    element: HTMLElement
+) => (): Offset => {
     const offsetAndSize = offsetAndSizeOfElement(element);
     const sizeOfParent = sizeOfElement(element.parentElement!);
     const onePercentHorizontal = sizeOfParent.width * 0.01;
