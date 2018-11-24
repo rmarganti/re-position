@@ -1,0 +1,10 @@
+.docz
+.vscode
+coverage
+documentation
+node_modules
+src
+
+yarn-error.log
+yarn.lock
+

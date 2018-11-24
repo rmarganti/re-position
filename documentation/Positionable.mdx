@@ -1,0 +1,118 @@
+---
+name: Positionable
+route: /positionable
+order: 4
+---
+
+# Positionable
+
+`Positionable` doesn't provide a container or transform handles. Instead it
+provides the current position via render props. It requires a bit more work
+out of the box but is infinitely more flexible.
+
+## Example Usage
+
+The following is a simple example of a implementation that only provides a
+single resize handle in the bottom-right hand corner. Positionable does not
+render any of its own elements, so you have all the flexibility you need
+to render things how you see fit.
+
+import { PropsTable } from 'docz'
+
+import { Positionable } from '../src';
+import Playground from './PatchedPlayground'
+
+<Playground style={{
+    backgroundColor: '#f0f0f0',
+    height: '400px',
+    overflow: 'hidden',
+    position: 'relative',
+}}>
+    <Positionable
+        resizable
+        position={{
+            left: '0%',
+            top: '0%',
+            height: '25%',
+            width: '25%',
+            rotation: '0deg',
+        }}
+    >
+        {({ position, refHandlers }) => (
+            <div
+                ref={refHandlers.container}
+                style={Object.assign({}, position, {
+                    display: 'inline-block',
+                    position: 'relative',
+                    backgroundColor: "#ddd",
+                })}
+            >
+                <span>Hello!</span>
+
+                <div
+                    ref={refHandlers.seResize}
+                    style={{
+                        position: 'absolute',
+                        bottom: '-5px',
+                        right: '-5px',
+                        width: '10px',
+                        height: '10px',
+                        backgroundColor: '#f00',
+                    }}
+                />
+            </div>
+        )}
+    </Positionable>
+
+    <div style={{
+        display: 'inline-block',
+        width: '25%',
+        height: '25%',
+        marginLeft: '1em',
+        backgroundColor: '#d7d7d7',
+    }}>
+        Non-Positionable div
+    </div>
+</Playground>
+
+## Props
+
+<PropsTable of={Positionable} />
+
+## Render Callback
+
+You can use Positionable by provided a function as `children` or via the
+`render` props. Both receive an object containing the current position
+(`position`) and the ref handlers (`refHandlers`).
+
+### Children
+
+```ts
+    <Positionable>
+        {({ position, refHandlers }) => (
+            <div ref={refHandlers.container} style={position} />
+        )}
+    </Positionable>
+```
+
+### Render Prop
+
+```ts
+    <Positionable
+        render={({ position, refHandlers }) => (
+            <div ref={refHandlers.container} style={position} />
+        )}
+    />
+```
+
+## Ref Handlers
+
+Positionable provides ref handlers for the container element, 4 corner rotate
+elements, and 8 resize directions elements. The only required ref is for the
+container. The available refs are attached to the `refHandlers` property on the
+render callback:
+
+* `container`
+* `nResize` `neResize` `eResize` `seResize`
+  `sResize` `swResize` `wResize` `nwResize`
+* `neRotate` `seRotate` `swRotate` `nwRotate`

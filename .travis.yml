@@ -1,0 +1,20 @@
+language: node_js
+node_js:
+    - stable
+    - '6'
+    - '4'
+deploy:
+    - provider: npm
+      email: $NPM_EMAIL
+      api_key: $NPM_TOKEN
+      on:
+          tags: true
+          repo: rmarganti/re-position
+
+    - provider: pages
+      skip-cleanup: true
+      github-token: $GH_TOKEN
+      keep-history: true
+      on:
+          tags: true
+          repo: rmarganti/re-position

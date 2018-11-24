@@ -1,0 +1,62 @@
+---
+name: PositionableContainer
+route: /positionable-container
+order: 5
+---
+
+import { PropsTable } from 'docz'
+import { PositionableContainer } from '../src';
+import Playground from './PatchedPlayground'
+
+# PositionableContainer
+
+`PositionableContainer` is an absolutely positioned container element, a `div`
+by default, with rotation and resize handles. It should cover most use cases.
+
+## Example Usage
+
+<Playground style={{
+    backgroundColor: '#f0f0f0',
+    height: '400px',
+    overflow: 'hidden',
+    position: 'relative',
+}}>
+    <PositionableContainer
+        Element="span"
+        movable
+        resizable="both"
+        rotatable
+        position={{
+            left: '30%',
+            top: '30%',
+            height: '40%',
+            width: '40%',
+            rotation: '0deg',
+        }}
+        style={{
+            backgroundImage: 'url(https://picsum.photos/500/300)',
+            backgroundPosition: 'center',
+            backgroundSize: 'cover',
+        }}
+    >
+        <p
+            style={{
+                fontSize: '1.25em',
+                margin: '1em',
+                color: '#fff',
+                textShadow: '2px 2px 5px rgba(0, 0, 0, 0.5)'
+            }}
+        >
+            re-position
+        </p>
+    </PositionableContainer>
+</Playground>
+
+## Props
+
+<PropsTable of={PositionableContainer} />
+
+## The Transform Box
+
+Note that the transform box is rendered as a sibling to `PositionableContainer`.
+This allows it to appear above any other adjacent elements.
