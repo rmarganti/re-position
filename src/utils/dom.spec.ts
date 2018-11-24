@@ -29,16 +29,33 @@ describe('utils/dom', () => {
     });
 
     describe('scaleOfElement()', () => {
-        it('calculates the scale of an HTML element', () => {
-            const div = document.createElement('div');
-            div.style.width = '100px';
-            div.style.height = '100px';
-            div.style.left = '100px';
-            div.style.top = '100px';
-            div.style.transform = toCSS(scale(2));
+        it('calculates the global scale of an HTML element', () => {
+            const grandParent = document.createElement('div');
+            grandParent.style.width = '100px';
+            grandParent.style.height = '100px';
+            grandParent.style.left = '100px';
+            grandParent.style.top = '100px';
+            grandParent.style.transform = toCSS(scale(0.5));
 
-            const scaleAmount = scaleOfElement(div);
-            expect(scaleAmount).toEqual(2);
+            const parent = document.createElement('div');
+            parent.style.width = '100px';
+            parent.style.height = '100px';
+            parent.style.left = '100px';
+            parent.style.top = '100px';
+            parent.style.transform = toCSS(scale(3));
+
+            const child = document.createElement('div');
+            child.style.width = '100px';
+            child.style.height = '100px';
+            child.style.left = '100px';
+            child.style.top = '100px';
+            child.style.transform = toCSS(scale(2));
+
+            grandParent.appendChild(parent);
+            parent.appendChild(child);
+
+            const scaleAmount = scaleOfElement(child);
+            expect(scaleAmount).toEqual(3); // 0.5 x 3 x 2
         });
     });
 

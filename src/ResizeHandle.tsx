@@ -70,6 +70,7 @@ const ResizeHandle = styled.div<ResizeHandleProps>`
         }
     `};
 
+    // Increase the size of the clickable area
     &:after {
         content: '';
         position: absolute;

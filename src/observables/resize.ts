@@ -12,7 +12,7 @@ import {
     offsetAndSizeOfElement,
     rotationOfElement,
     scaleOfElement,
-    transformMatrixOfElement,
+    transformationMatrixOfElement,
     visualCorners,
 } from '../utils/dom';
 import {
@@ -67,7 +67,7 @@ export const createResizeObservable = ({
 
             const oldOffsetAndSize = offsetAndSizeOfElement(element);
             const oldRotation = rotationOfElement(element);
-            const transformMatrix = transformMatrixOfElement(element);
+            const transformationMatrix = transformationMatrixOfElement(element);
             const scale = scaleOfElement(element);
 
             const move$ = documentMouseMove$.pipe(
@@ -100,7 +100,7 @@ export const createResizeObservable = ({
                 map(
                     offsetForVisualConsistency(
                         oldOffsetAndSize,
-                        transformMatrix,
+                        transformationMatrix,
                         top,
                         right,
                         bottom,
@@ -234,14 +234,14 @@ const lockAspectRatio = (shouldLock: boolean, aspectRatio: number) => (
  */
 const offsetForVisualConsistency = (
     oldOffsetAndSize: OffsetAndSize,
-    transformMatrix: Matrix,
+    transformationMatrix: Matrix,
     top?: boolean,
     right?: boolean,
     bottom?: boolean,
     left?: boolean
 ) => (newOffsetAndSize: OffsetAndSize): OffsetAndSize => {
-    const oldCorners = visualCorners(oldOffsetAndSize, transformMatrix);
-    const newCorners = visualCorners(newOffsetAndSize, transformMatrix);
+    const oldCorners = visualCorners(oldOffsetAndSize, transformationMatrix);
+    const newCorners = visualCorners(newOffsetAndSize, transformationMatrix);
 
     let changeX: number;
     let changeY: number;

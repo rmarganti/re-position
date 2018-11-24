@@ -1,4 +1,9 @@
-import { applyToPoint, fromString, Matrix } from 'transformation-matrix';
+import {
+    applyToPoint,
+    fromString,
+    Matrix,
+    transform,
+} from 'transformation-matrix';
 import { Offset, OffsetAndSize, Size } from '../types';
 
 /**
@@ -34,37 +39,53 @@ export const sizeOfElement = (element: HTMLElement): Size => ({
  * Gets the current rotation of an HTML element.
  */
 export const rotationOfElement = (element: HTMLElement): number => {
-    const transform = transformMatrixOfElement(element);
-    const radians = Math.atan2(transform.b, transform.a);
+    const tM = transformationMatrixOfElement(element);
+    const radians = Math.atan2(tM.b, tM.a);
 
     return +(radians * (180 / Math.PI)).toFixed(1);
 };
 
 /**
- * Get the scale of an HTMLElement. Assumes x and y scale are equal.
+ * Get the scale of an HTMLElement. Takes all of its
+ * ancestors into account. Assumes x and y scale are equal.
  */
 export const scaleOfElement = (element: HTMLElement): number => {
-    const transformationMatrix = transformMatrixOfElement(element);
-    const { a, c } = transformationMatrix;
+    const tM = globalTransformationMatrixOfElement(element);
+    const { a, c } = tM;
     const scale = Math.sqrt(a * a + c * c);
 
-    const scaleOfParent = element.parentElement
-        ? scaleOfElement(element.parentElement)
-        : 1;
-
-    return scale * scaleOfParent;
+    return scale;
 };
 
 /**
  * Get the transform Matrix object of an element.
  */
-export const transformMatrixOfElement = (element: HTMLElement): Matrix =>
-    fromString(transformMatrixStringOfElement(element));
+export const transformationMatrixOfElement = (element: HTMLElement): Matrix =>
+    fromString(transformationMatrixStringOfElement(element));
+
+/**
+ * The cumulative transformation matrix of an element's
+ * transforms and all of its ancestors' transforms.
+ */
+export const globalTransformationMatrixOfElement = (
+    element: HTMLElement
+): Matrix => {
+    const tM = transformationMatrixOfElement(element);
+
+    if (element.parentElement) {
+        const parentTM = globalTransformationMatrixOfElement(
+            element.parentElement
+        );
+        return transform(tM, parentTM);
+    }
+
+    return tM;
+};
 
 /*
- * Cross browser way to get the current transform matrix of an Element.
+ * Cross browser way to get the current transformation matrix of an Element.
  */
-const transformMatrixStringOfElement = (element: HTMLElement): string => {
+const transformationMatrixStringOfElement = (element: HTMLElement): string => {
     const style = window.getComputedStyle(element, null);
 
     const result =

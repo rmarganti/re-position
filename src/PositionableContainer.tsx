@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { Positionable } from './Positionable';
 import TransformBox from './TransformBox';
-import { PositionStrings, ResizableHandleLocation } from './types';
+import { PositionStrings, ResizeHandleLocation } from './types';
 
 export interface PositionableContainerProps {
     className?: string;
@@ -32,7 +32,7 @@ export interface PositionableContainerProps {
      * Either an array of directions (ie. `['n', 'e', 'se']`) or
      * `true` if you want enable all directions.
      */
-    resizable: ResizableHandleLocation[] | boolean;
+    resizable: ResizeHandleLocation[] | boolean;
 
     /** Should rotation be enabled? */
     rotatable?: boolean;

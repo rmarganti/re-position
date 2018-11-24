@@ -1,7 +1,9 @@
 .docz
+.vscode
 coverage
-lib
+documentation
 node_modules
+src
 
 yarn-error.log
 yarn.lock

@@ -1,13 +1,13 @@
 {
     "name": "re-position",
-    "version": "0.0.1",
-    "main": "build/lib/index.js",
-    "types": "build/lib/index.d.ts",
+    "version": "0.0.1-alpha",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
     "files": [
-        "build/lib"
+        "lib"
     ],
     "scripts": {
-        "build": "rimraf build && npm run build-lib && npm run build-docs",
+        "build": "rimraf lib && npm run build-lib && npm run build-docs",
         "build-docs": "docz build",
         "build-lib": "tsc",
         "dev": "docz dev",
