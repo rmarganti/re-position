@@ -3,6 +3,7 @@ node_js:
     - stable
 deploy:
     - provider: npm
+      skip-cleanup: true
       email: $NPM_EMAIL
       api_key: $NPM_TOKEN
       on:
