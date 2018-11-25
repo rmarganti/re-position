@@ -26,13 +26,13 @@ export interface PositionableContainerProps {
     position: PositionStrings;
 
     /** Render Prop alternative to using `children` */
-    render: () => JSX.Element;
+    render?: () => JSX.Element;
 
     /**
      * Either an array of directions (ie. `['n', 'e', 'se']`) or
      * `true` if you want enable all directions.
      */
-    resizable: ResizeHandleLocation[] | boolean;
+    resizable?: ResizeHandleLocation[] | boolean;
 
     /** Should rotation be enabled? */
     rotatable?: boolean;
@@ -40,7 +40,7 @@ export interface PositionableContainerProps {
     /** Snap drag and resize to pixels of this interval. */
     snapTo?: number;
 
-    style: React.CSSProperties;
+    style?: React.CSSProperties;
 }
 
 const PositionableContainer: React.SFC<PositionableContainerProps> = ({
