@@ -1,6 +1,14 @@
 language: node_js
+
 node_js:
     - stable
+
+cache: yarn
+
+script:
+    - yarn test
+    - yarn build
+
 deploy:
     - provider: npm
       skip-cleanup: true
