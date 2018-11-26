@@ -22,6 +22,7 @@ deploy:
       skip-cleanup: true
       github-token: $GH_TOKEN
       keep-history: true
+      local-dir: .docz/dist
       on:
           tags: true
           repo: rmarganti/re-position
