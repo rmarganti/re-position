@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { PositionableComponentProps, PositionableProps } from './Positionable';
+import { PositionableProps, RenderCallbackArgs } from './Positionable';
 import { PositionableContainerProps } from './PositionableContainer';
 import ResizeHandle from './ResizeHandle';
 import RotateHandle from './RotateHandle';
@@ -11,8 +11,8 @@ import {
 } from './utils/misc';
 
 interface TransformBoxProps extends React.HTMLAttributes<HTMLDivElement> {
-    position: PositionableComponentProps['position'];
-    refHandlers: PositionableComponentProps['refHandlers'];
+    position: RenderCallbackArgs['renderedPosition'];
+    refHandlers: RenderCallbackArgs['refHandlers'];
     resizable: PositionableContainerProps['resizable'];
     rotatable: PositionableProps['rotatable'];
 }

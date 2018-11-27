@@ -65,31 +65,31 @@ const PositionableContainer: React.SFC<PositionableContainerProps> = ({
         resizable={!!resizable}
         rotatable={rotatable}
         snapTo={snapTo}
-        render={({ position: currentPosition, refHandlers }) => (
+        render={({ renderedPosition, refHandlers }) => (
             <>
                 <Element
                     style={{
                         ...style,
-                        height: `${currentPosition.height}`,
-                        left: `${currentPosition.left}`,
+                        height: `${renderedPosition.height}`,
+                        left: `${renderedPosition.left}`,
                         position: 'absolute',
-                        top: `${currentPosition.top}`,
-                        transform: `rotate(${currentPosition.rotation})`,
-                        width: `${currentPosition.width}`,
+                        top: `${renderedPosition.top}`,
+                        transform: `rotate(${renderedPosition.rotation})`,
+                        width: `${renderedPosition.width}`,
                     }}
                     {...rest}
                 >
                     {render ? render() : children}
                 </Element>
-                {!disabled &&
-                    (resizable || rotatable || movable) && (
-                        <TransformBox
-                            position={currentPosition}
-                            refHandlers={refHandlers}
-                            resizable={resizable}
-                            rotatable={rotatable}
-                        />
-                    )}
+
+                {!disabled && (resizable || rotatable || movable) && (
+                    <TransformBox
+                        position={renderedPosition}
+                        refHandlers={refHandlers}
+                        resizable={resizable}
+                        rotatable={rotatable}
+                    />
+                )}
             </>
         )}
     />

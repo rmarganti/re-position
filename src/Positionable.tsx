@@ -47,10 +47,10 @@ export interface PositionableProps {
     rotatable?: boolean;
 }
 
-type RenderCallback = (args: PositionableComponentProps) => JSX.Element;
+type RenderCallback = (args: RenderCallbackArgs) => JSX.Element;
 
-export interface PositionableComponentProps {
-    position: PositionStrings;
+export interface RenderCallbackArgs {
+    renderedPosition: PositionStrings;
     refHandlers: Positionable['refHandlers'];
 }
 
@@ -66,6 +66,8 @@ export class Positionable extends React.Component<
 
     private refHandlers = {
         container: React.createRef<HTMLElement>(),
+
+        dnd: React.createRef<HTMLElement>(),
 
         neRotate: React.createRef<HTMLElement>(),
         seRotate: React.createRef<HTMLElement>(),
@@ -121,16 +123,22 @@ export class Positionable extends React.Component<
     public render() {
         const { children, render } = this.props;
 
-        const passedProps = {
-            position: this.state,
+        const passedProps: RenderCallbackArgs = {
+            renderedPosition: this.state,
             refHandlers: this.refHandlers,
         };
 
-        return isFunction(render)
-            ? render(passedProps)
-            : isFunction(children)
-                ? children(passedProps)
-                : null;
+        if (isFunction(render)) {
+            return render(passedProps);
+        }
+
+        if (isFunction(children)) {
+            return children(passedProps);
+        }
+
+        throw new Error(
+            'Positionable must receive `render` or `children` as render callback'
+        );
     }
 
     /**
@@ -167,6 +175,9 @@ export class Positionable extends React.Component<
         if (movable) {
             createDndObservable({
                 element: this.refHandlers.container.current,
+                handle:
+                    this.refHandlers.dnd.current ||
+                    this.refHandlers.container.current,
                 onComplete: this.handleUpdate,
                 shouldConvertToPercent: left.includes('%'),
                 snapTo,
@@ -191,21 +202,21 @@ export class Positionable extends React.Component<
 
                 if (!handle) {
                     return;
-                } else {
-                    createResizeObservable({
-                        element: this.refHandlers.container.current!,
-                        handle,
-                        onComplete: this.handleUpdate,
-                        top: config.top,
-                        right: config.right,
-                        bottom: config.bottom,
-                        left: config.left,
-                        shouldConvertToPercent: width.includes('%'),
-                        snapTo,
-                    })
-                        .pipe(takeUntil(this.destroy$))
-                        .subscribe(newPosition => this.setState(newPosition));
                 }
+
+                createResizeObservable({
+                    element: this.refHandlers.container.current!,
+                    handle,
+                    onComplete: this.handleUpdate,
+                    top: config.top,
+                    right: config.right,
+                    bottom: config.bottom,
+                    left: config.left,
+                    shouldConvertToPercent: width.includes('%'),
+                    snapTo,
+                })
+                    .pipe(takeUntil(this.destroy$))
+                    .subscribe(newPosition => this.setState(newPosition));
             });
         }
 
@@ -217,15 +228,15 @@ export class Positionable extends React.Component<
 
                 if (!handle) {
                     return;
-                } else {
-                    createRotateObservable({
-                        element: this.refHandlers.container.current!,
-                        handle,
-                        onComplete: this.handleUpdate,
-                    })
-                        .pipe(takeUntil(this.destroy$))
-                        .subscribe(newRotation => this.setState(newRotation));
                 }
+
+                createRotateObservable({
+                    element: this.refHandlers.container.current!,
+                    handle,
+                    onComplete: this.handleUpdate,
+                })
+                    .pipe(takeUntil(this.destroy$))
+                    .subscribe(newRotation => this.setState(newRotation));
             });
         }
     }

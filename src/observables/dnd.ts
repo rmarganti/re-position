@@ -21,6 +21,7 @@ import {
 
 interface DndObservableOptions {
     element: HTMLElement;
+    handle: HTMLElement;
     onComplete?: () => void;
     shouldConvertToPercent: boolean;
     snapTo?: number;
@@ -31,12 +32,13 @@ interface DndObservableOptions {
  * and emits a stream of updated positions.
  */
 export const createDndObservable = ({
+    handle,
     element,
     onComplete,
     shouldConvertToPercent = true,
     snapTo,
 }: DndObservableOptions): Observable<OffsetStrings> => {
-    const mouseDown$ = fromEvent(element, 'mousedown');
+    const mouseDown$ = fromEvent(handle, 'mousedown');
 
     return mouseDown$.pipe(
         filter((e: MouseEvent) => e.which === 1), // left clicks only
