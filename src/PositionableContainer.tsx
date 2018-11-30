@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { Positionable } from './Positionable';
 import TransformBox from './TransformBox';
-import { PositionStrings, ResizeHandleLocation } from './types';
+import { Position, ResizeHandleLocation } from './types';
 
 export interface PositionableContainerProps {
     className?: string;
@@ -16,14 +16,20 @@ export interface PositionableContainerProps {
     /** Component or HTML element to use for the container. */
     Element?: React.ComponentType<any>;
 
+    /**
+     * Members of the same group will respond
+     * to each other's drag and drop events.
+     */
+    group?: string;
+
     /** Should moving be enabled? */
     movable?: boolean;
 
     /** Callback to notify when Positioning has changed */
-    onUpdate?: (position: PositionStrings) => void;
+    onUpdate?: (position: Position) => void;
 
     /** Current Positioning (left, top, width, height, rotation) */
-    position: PositionStrings;
+    position: Position;
 
     /** Render Prop alternative to using `children` */
     render?: () => JSX.Element;
@@ -47,6 +53,7 @@ const PositionableContainer: React.SFC<PositionableContainerProps> = ({
     children,
     disabled,
     Element = 'div',
+    group,
     rotatable,
     resizable,
     movable,
@@ -59,6 +66,7 @@ const PositionableContainer: React.SFC<PositionableContainerProps> = ({
 }) => (
     <Positionable
         disabled={disabled}
+        group={group}
         movable={movable}
         onUpdate={onUpdate}
         position={position}
@@ -66,7 +74,7 @@ const PositionableContainer: React.SFC<PositionableContainerProps> = ({
         rotatable={rotatable}
         snapTo={snapTo}
         render={({ renderedPosition, refHandlers }) => (
-            <>
+            <React.Fragment>
                 <Element
                     style={{
                         ...style,
@@ -90,7 +98,7 @@ const PositionableContainer: React.SFC<PositionableContainerProps> = ({
                         rotatable={rotatable}
                     />
                 )}
-            </>
+            </React.Fragment>
         )}
     />
 );

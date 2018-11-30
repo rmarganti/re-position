@@ -14,4 +14,4 @@ export { default as TransformBox } from './TransformBox';
 /**
  * Types
  */
-export { PositionStrings, ResizeHandleLocation } from './types';
+export { Position, ResizeHandleLocation } from './types';

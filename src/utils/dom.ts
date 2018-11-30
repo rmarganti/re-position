@@ -4,7 +4,8 @@ import {
     Matrix,
     transform,
 } from 'transformation-matrix';
-import { Offset, OffsetAndSize, Size } from '../types';
+
+import { OffsetAndSizeNumbers, OffsetNumbers, SizeNumbers } from '../types';
 
 /**
  * Get the full offset (left, top, width,
@@ -12,7 +13,7 @@ import { Offset, OffsetAndSize, Size } from '../types';
  */
 export const offsetAndSizeOfElement = (
     element: HTMLElement
-): OffsetAndSize => ({
+): OffsetAndSizeNumbers => ({
     left: element.offsetLeft,
     top: element.offsetTop,
     width: element.offsetWidth,
@@ -22,7 +23,7 @@ export const offsetAndSizeOfElement = (
 /**
  * Get the left and top offsets of an HTML element, relative to its parent.
  */
-export const offsetOfElement = (element: HTMLElement): Offset => ({
+export const offsetOfElement = (element: HTMLElement): OffsetNumbers => ({
     left: element.offsetLeft,
     top: element.offsetTop,
 });
@@ -30,7 +31,7 @@ export const offsetOfElement = (element: HTMLElement): Offset => ({
 /**
  * Get the px size of an HTML element.
  */
-export const sizeOfElement = (element: HTMLElement): Size => ({
+export const sizeOfElement = (element: HTMLElement): SizeNumbers => ({
     width: element.offsetWidth,
     height: element.offsetHeight,
 });
@@ -107,7 +108,10 @@ const transformationMatrixStringOfElement = (element: HTMLElement): string => {
  * Calculate where the four corners of an HTML Element
  * will be after applying CSS transformations.
  */
-export const visualCorners = (offsetAndSize: OffsetAndSize, tm: Matrix) => {
+export const visualCorners = (
+    offsetAndSize: OffsetAndSizeNumbers,
+    tm: Matrix
+) => {
     const halfWidth = offsetAndSize.width / 2;
     const halfHeight = offsetAndSize.height / 2;
 

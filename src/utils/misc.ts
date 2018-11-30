@@ -1,4 +1,4 @@
-import { Offset, OffsetStrings, ResizeHandleLocation } from '../types';
+import { Offset, OffsetNumbers, ResizeHandleLocation } from '../types';
 
 /**
  * Calculate the angle between two points..
@@ -57,7 +57,7 @@ export const objectsAreEqual = (a: {}, b: {}) => {
 export const convertOffsetToPercentOrPixels = (
     shouldConvertToPercent: boolean,
     parent: HTMLElement
-) => (offset: Offset): OffsetStrings =>
+) => (offset: OffsetNumbers): Offset =>
     shouldConvertToPercent
         ? {
               left: `${round((offset.left / parent.offsetWidth) * 100)}%`,
@@ -155,3 +155,11 @@ export const round = (value: number, precision: number = 1): number =>
  */
 export const isFunction = (f: any): f is Function =>
     f && {}.toString.call(f) === '[object Function]';
+
+/**
+ * Generate a random alpha-numeric string.
+ */
+export const randomString = () =>
+    Math.random()
+        .toString(36)
+        .slice(2);

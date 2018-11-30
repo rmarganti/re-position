@@ -1,25 +1,25 @@
-export type PositionStrings = AsStrings<Position>;
-export type Position = Offset & Size & Rotation;
+export type Position = AsStrings<PositionNumbers>;
+export type PositionNumbers = OffsetNumbers & SizeNumbers & RotationNumber;
 
-export type OffsetAndSizeStrings = AsStrings<OffsetAndSize>;
-export type OffsetAndSize = Offset & Size;
+export type OffsetAndSize = AsStrings<OffsetAndSizeNumbers>;
+export type OffsetAndSizeNumbers = OffsetNumbers & SizeNumbers;
 
-export type OffsetStrings = AsStrings<Offset>;
-export interface Offset {
+export type Offset = AsStrings<OffsetNumbers>;
+export interface OffsetNumbers {
     left: number;
     top: number;
 }
 
-export interface Size {
+export interface SizeNumbers {
     height: number;
     width: number;
 }
 
-export interface Rotation {
+export interface RotationNumber {
     rotation: string;
 }
 
-export interface AngleAndDistance {
+export interface AngleAndDistanceNumbers {
     angle: number;
     distance: number;
 }

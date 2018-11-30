@@ -1,18 +1,9 @@
 import { fromEvent, Observable } from 'rxjs';
-import {
-    distinctUntilChanged,
-    filter,
-    map,
-    skipWhile,
-    switchMap,
-} from 'rxjs/operators';
+import { filter, map, skipWhile, switchMap, tap } from 'rxjs/operators';
 
-import { Offset, OffsetStrings } from '../types';
-import { offsetOfElement, scaleOfElement } from '../utils/dom';
-import {
-    convertOffsetToPercentOrPixels,
-    snapObjectValues,
-} from '../utils/misc';
+import { Offset, OffsetNumbers } from '../types';
+import { scaleOfElement } from '../utils/dom';
+import { allMoveEnd$, allMoveStart$, allMoveUpdate$ } from './allMove';
 import {
     documentMouseMove$,
     documentMouseUp$,
@@ -21,10 +12,8 @@ import {
 
 interface DndObservableOptions {
     element: HTMLElement;
+    group: string;
     handle: HTMLElement;
-    onComplete?: () => void;
-    shouldConvertToPercent: boolean;
-    snapTo?: number;
 }
 
 /**
@@ -32,16 +21,15 @@ interface DndObservableOptions {
  * and emits a stream of updated positions.
  */
 export const createDndObservable = ({
-    handle,
     element,
-    onComplete,
-    shouldConvertToPercent = true,
-    snapTo,
-}: DndObservableOptions): Observable<OffsetStrings> => {
+    group,
+    handle,
+}: DndObservableOptions): Observable<Offset> => {
     const mouseDown$ = fromEvent(handle, 'mousedown');
 
     return mouseDown$.pipe(
         filter((e: MouseEvent) => e.which === 1), // left clicks only
+        tap(allMoveStart$),
         switchMap((e: MouseEvent) => {
             e.preventDefault();
             e.stopPropagation();
@@ -52,21 +40,11 @@ export const createDndObservable = ({
             const move$ = documentMouseMove$.pipe(
                 map(changeFromPointToMouseEvent(e.clientX, e.clientY, scale)),
                 skipWhile(hasntMovedFivePixels),
-                map(addOffsets(offsetOfElement(element))),
-                map(snapObjectValues(snapTo)),
-                distinctUntilChanged(),
-                map(
-                    convertOffsetToPercentOrPixels(
-                        shouldConvertToPercent,
-                        element.parentElement!
-                    )
-                )
+                tap(notifyListeners(group))
             );
 
-            return requestAnimationFramesUntil(
-                move$,
-                documentMouseUp$,
-                onComplete
+            return requestAnimationFramesUntil(move$, documentMouseUp$, () =>
+                allMoveEnd$.next()
             );
         })
     );
@@ -79,7 +57,7 @@ const changeFromPointToMouseEvent = (
     originX: number,
     originY: number,
     scale: number
-) => (e: MouseEvent): Offset => {
+) => (e: MouseEvent): OffsetNumbers => {
     const leftChange = (e.clientX - originX) / scale;
     const topChange = (e.clientY - originY) / scale;
 
@@ -118,14 +96,14 @@ const changeFromPointToMouseEvent = (
 
 /**
  * Determine if the mouse has moved 5 pixels or more in any direction.
+ * Change = √(a² + b²)
  */
-const hasntMovedFivePixels = (change: Offset) =>
+const hasntMovedFivePixels = (change: OffsetNumbers) =>
     Math.sqrt(change.top * change.top + change.left * change.left) < 5;
 
 /**
- * Add the change in mouse position to an origin point.
+ * Notify allMove observers that a change in mouse position
+ * has occurred relative to the initial mouse-down offset.
  */
-const addOffsets = (origin: Offset) => (change: Offset) => ({
-    left: origin.left + change.left,
-    top: origin.top + change.top,
-});
+const notifyListeners = (group: string) => (offset: OffsetNumbers) =>
+    allMoveUpdate$.next({ group, offset });

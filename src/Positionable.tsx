@@ -3,20 +3,22 @@ import { Subject } from 'rxjs';
 
 import { takeUntil } from 'rxjs/operators';
 import {
+    createAllMoveObservable,
     createDndObservable,
     createKeyboardMoveObservable,
     createResizeObservable,
     createRotateObservable,
 } from './observables';
-import { PositionStrings } from './types';
+import { Position } from './types';
 import {
     calculateResizeObservableConfigs,
     calculateRotateObservableConfigs,
     isFunction,
     objectsAreEqual,
+    randomString,
 } from './utils/misc';
 
-type PositionableState = PositionStrings;
+type PositionableState = Position;
 
 export interface PositionableProps {
     /**
@@ -25,14 +27,20 @@ export interface PositionableProps {
      */
     disabled?: boolean;
 
+    /**
+     * Members of the same group will respond
+     * to each other's drag and drop events.
+     */
+    group?: string;
+
     /** Should moving be enabled? */
     movable?: boolean;
 
     /** Callback to notify when Positioning has changed */
-    onUpdate?: (sizing: PositionStrings) => void;
+    onUpdate?: (sizing: Position) => void;
 
     /** Current Positioning (left, top, width, height, rotation) */
-    position: PositionStrings;
+    position: Position;
 
     /** Render Prop alternative to using `children` */
     render?: RenderCallback;
@@ -50,7 +58,7 @@ export interface PositionableProps {
 type RenderCallback = (args: RenderCallbackArgs) => JSX.Element;
 
 export interface RenderCallbackArgs {
-    renderedPosition: PositionStrings;
+    renderedPosition: Position;
     refHandlers: Positionable['refHandlers'];
 }
 
@@ -88,7 +96,6 @@ export class Positionable extends React.Component<
 
     constructor(props: PositionableProps) {
         super(props);
-
         this.state = { ...props.position };
     }
 
@@ -161,6 +168,7 @@ export class Positionable extends React.Component<
     private buildSubscriptions() {
         const { disabled, movable, resizable, rotatable, snapTo } = this.props;
         const { left, width } = this.state;
+        const group = this.props.group || randomString();
 
         this.destroy$.next();
 
@@ -175,9 +183,17 @@ export class Positionable extends React.Component<
         if (movable) {
             createDndObservable({
                 element: this.refHandlers.container.current,
+                group,
                 handle:
                     this.refHandlers.dnd.current ||
                     this.refHandlers.container.current,
+            })
+                .pipe(takeUntil(this.destroy$))
+                .subscribe();
+
+            createAllMoveObservable({
+                element: this.refHandlers.container.current,
+                group,
                 onComplete: this.handleUpdate,
                 shouldConvertToPercent: left.includes('%'),
                 snapTo,

@@ -4,9 +4,9 @@ route: /positionable-container
 order: 5
 ---
 
-import { PropsTable } from 'docz'
+import { PropsTable } from 'docz';
 import { PositionableContainer } from '../src';
-import Playground from './PatchedPlayground'
+import Playground from './PatchedPlayground';
 
 # PositionableContainer
 
@@ -15,12 +15,14 @@ by default, with rotation and resize handles. It should cover most use cases.
 
 ## Example Usage
 
-<Playground style={{
-    backgroundColor: '#f0f0f0',
-    height: '400px',
-    overflow: 'hidden',
-    position: 'relative',
-}}>
+<Playground
+    style={{
+        backgroundColor: '#f0f0f0',
+        height: '400px',
+        overflow: 'hidden',
+        position: 'relative',
+    }}
+>
     <PositionableContainer
         Element="span"
         movable
@@ -44,7 +46,7 @@ by default, with rotation and resize handles. It should cover most use cases.
                 fontSize: '1.25em',
                 margin: '1em',
                 color: '#fff',
-                textShadow: '2px 2px 5px rgba(0, 0, 0, 0.5)'
+                textShadow: '2px 2px 5px rgba(0, 0, 0, 0.5)',
             }}
         >
             re-position

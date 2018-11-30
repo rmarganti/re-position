@@ -1,3 +1,4 @@
+export * from './allMove';
 export * from './dnd';
 export * from './keyboardMove';
 export * from './resize';

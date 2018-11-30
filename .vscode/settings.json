@@ -5,7 +5,7 @@
         "**/node_modules": true,
         "**/*.html": true,
         ".docz": true,
-        "build": true
+        "lib": true
     },
     "cSpell.words": [
         "Obvservable",
