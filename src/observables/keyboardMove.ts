@@ -1,7 +1,7 @@
 import { timer } from 'rxjs';
 import { filter, map, switchMap, takeUntil } from 'rxjs/operators';
 
-import { Offset } from '../types';
+import { OffsetNumbers } from '../types';
 import { offsetAndSizeOfElement, sizeOfElement } from '../utils/dom';
 import { convertOffsetToPercentOrPixels } from '../utils/misc';
 import { keyDowns$, keyUps$ } from './misc';
@@ -13,7 +13,7 @@ interface KeyboardMoveObservableOptions {
 }
 
 // These keyboard keys result in these movements.
-const ARROW_KEY_DIRECTIONS: { [index: string]: Offset } = {
+const ARROW_KEY_DIRECTIONS: { [index: string]: OffsetNumbers } = {
     ArrowLeft: { left: -1, top: 0 },
     ArrowRight: { left: 1, top: 0 },
     ArrowUp: { left: 0, top: -1 },
@@ -68,7 +68,7 @@ export const createKeyboardMoveObservable = ({
 export const addToOffset = (
     e: KeyboardEvent,
     element: HTMLElement
-) => (): Offset => {
+) => (): OffsetNumbers => {
     const offsetAndSize = offsetAndSizeOfElement(element);
     const sizeOfParent = sizeOfElement(element.parentElement!);
     const onePercentHorizontal = sizeOfParent.width * 0.01;

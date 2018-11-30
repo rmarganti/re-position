@@ -1,7 +1,7 @@
 import { fromEvent, Observable } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 
-import { Rotation } from '../types';
+import { RotationNumber } from '../types';
 import { rotationOfElement } from '../utils/dom';
 import { angleBetweenPoints, round } from '../utils/misc';
 import {
@@ -27,7 +27,7 @@ export const createRotateObservable = ({
     element,
     handle,
     onComplete,
-}: RotateObservableOptions): Observable<Rotation> => {
+}: RotateObservableOptions): Observable<RotationNumber> => {
     const mouseDown$ = fromEvent(handle, 'mousedown');
 
     return mouseDown$.pipe(
@@ -75,7 +75,7 @@ type AngleFromPointCalculator = (x: number, y: number) => number;
 const translateRotation = (
     angleCalculator: AngleFromPointCalculator,
     initialAngle: number
-) => (e: MouseEvent): Rotation => ({
+) => (e: MouseEvent): RotationNumber => ({
     rotation: `${round(
         angleCalculator(e.clientX, e.clientY) - initialAngle
     )}deg`,

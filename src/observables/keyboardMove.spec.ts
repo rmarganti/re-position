@@ -1,4 +1,4 @@
-import { Offset } from '../types';
+import { OffsetNumbers } from '../types';
 import { defineOffsetGetters } from '../utils/testing';
 import { addToOffset } from './keyboardMove';
 
@@ -27,7 +27,7 @@ describe('keyboardMove', () => {
             parentElement.style.height = '100px';
             parentElement.appendChild(element);
 
-            const result: Offset = addToOffset(arrowDown, element)();
+            const result: OffsetNumbers = addToOffset(arrowDown, element)();
 
             expect(result).toEqual({ left: 0, top: 1 });
         });
@@ -51,7 +51,7 @@ describe('keyboardMove', () => {
             parentElement.style.height = '100px';
             parentElement.appendChild(element);
 
-            const result: Offset = addToOffset(arrowDown, element)();
+            const result: OffsetNumbers = addToOffset(arrowDown, element)();
 
             expect(result).toEqual({ left: 5, top: 0 });
         });

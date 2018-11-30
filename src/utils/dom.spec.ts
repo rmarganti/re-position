@@ -6,7 +6,7 @@ import {
     toCSS,
 } from 'transformation-matrix';
 
-import { OffsetAndSize } from '../types';
+import { OffsetAndSizeNumbers } from '../types';
 import { rotationOfElement, scaleOfElement, visualCorners } from './dom';
 
 describe('utils/dom', () => {
@@ -61,7 +61,7 @@ describe('utils/dom', () => {
 
     describe('visualCorners()', () => {
         it('calculate the visual corners of non-rotated element', () => {
-            const centeredOnAxis: OffsetAndSize = {
+            const centeredOnAxis: OffsetAndSizeNumbers = {
                 left: -10,
                 top: -10,
                 width: 20,
@@ -78,7 +78,7 @@ describe('utils/dom', () => {
             expect(centeredOnAccessCorners.sw).toEqual({ x: -10, y: 10 });
             expect(centeredOnAccessCorners.nw).toEqual({ x: -10, y: -10 });
 
-            const allPositive: OffsetAndSize = {
+            const allPositive: OffsetAndSizeNumbers = {
                 left: 10,
                 top: 10,
                 width: 20,
@@ -94,7 +94,7 @@ describe('utils/dom', () => {
         });
 
         it('calculates the visual corners of a rotated element', () => {
-            const centeredOnAxis: OffsetAndSize = {
+            const centeredOnAxis: OffsetAndSizeNumbers = {
                 left: -10,
                 top: -10,
                 width: 20,
@@ -111,7 +111,7 @@ describe('utils/dom', () => {
             expect(centeredOnAccessCorners.sw).toEqual({ x: -10, y: -10 });
             expect(centeredOnAccessCorners.nw).toEqual({ x: 10, y: -10 });
 
-            const allPositive: OffsetAndSize = {
+            const allPositive: OffsetAndSizeNumbers = {
                 left: 10,
                 top: 10,
                 width: 20,

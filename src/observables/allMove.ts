@@ -6,7 +6,6 @@ import {
     pluck,
     switchMap,
     takeUntil,
-    tap,
 } from 'rxjs/operators';
 
 import { Offset, OffsetNumbers } from '../types';
@@ -53,7 +52,6 @@ export const createAllMoveObservable = ({
 }: AllMoveObservableOptions): Observable<Offset> =>
     allMoveStart$.pipe(
         switchMap(() => {
-            console.log('firing');
             const move$ = allMoveUpdate$.pipe(
                 takeUntil(allMoveEnd$),
                 filter(isMemberOfGroup(group)),
@@ -86,7 +84,6 @@ const translateMovementToPosition = (
 ) => (observable$: Observable<OffsetNumbers>) =>
     observable$.pipe(
         map(addOffsets(offsetOfElement(element))),
-        tap(console.log),
         map(snapObjectValues(snapTo)),
         distinctUntilChanged(),
         map(
@@ -100,10 +97,7 @@ const translateMovementToPosition = (
 /**
  * Add the change in mouse position to an origin point.
  */
-const addOffsets = (origin: OffsetNumbers) => (change: OffsetNumbers) => {
-    console.log(origin);
-    return {
-        left: origin.left + change.left,
-        top: origin.top + change.top,
-    };
-};
+const addOffsets = (origin: OffsetNumbers) => (change: OffsetNumbers) => ({
+    left: origin.left + change.left,
+    top: origin.top + change.top,
+});

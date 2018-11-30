@@ -3,10 +3,10 @@ import { distinctUntilChanged, filter, map, switchMap } from 'rxjs/operators';
 
 import { Matrix } from 'transformation-matrix';
 import {
-    AngleAndDistance,
+    AngleAndDistanceNumbers,
     OffsetAndSize,
-    OffsetAndSizeStrings,
-    Size,
+    OffsetAndSizeNumbers,
+    SizeNumbers,
 } from '../types';
 import {
     offsetAndSizeOfElement,
@@ -56,7 +56,7 @@ export const createResizeObservable = ({
     right,
     bottom,
     left,
-}: ResizeObservableOptions): Observable<OffsetAndSizeStrings> => {
+}: ResizeObservableOptions): Observable<OffsetAndSize> => {
     const mouseDown$ = fromEvent<MouseEvent>(handle, 'mousedown');
 
     return mouseDown$.pipe(
@@ -131,7 +131,7 @@ const angleAndDistanceFromPointToMouseEvent = (
     originX: number,
     originY: number,
     scale: number
-) => (e: MouseEvent): AngleAndDistance => ({
+) => (e: MouseEvent): AngleAndDistanceNumbers => ({
     angle: angleBetweenPoints(originX, originY)(e.clientX, e.clientY),
     distance:
         distanceBetweenPoints(originX, originY)(e.clientX, e.clientY) / scale,
@@ -142,8 +142,8 @@ const angleAndDistanceFromPointToMouseEvent = (
  * (taking old rotation of the element into account).
  */
 const horizontalAndVerticalChange = (oldRotation: number) => (
-    angleAndDistanceChange: AngleAndDistance
-): Size => {
+    angleAndDistanceChange: AngleAndDistanceNumbers
+): SizeNumbers => {
     const angleRadians =
         ((angleAndDistanceChange.angle - oldRotation) * Math.PI) / 180;
 
@@ -157,12 +157,12 @@ const horizontalAndVerticalChange = (oldRotation: number) => (
  * Apply horizontal and vertical change to old element's Size.
  */
 const applyToOriginalSize = (
-    oldOffsetAndSize: OffsetAndSize,
+    oldOffsetAndSize: OffsetAndSizeNumbers,
     top: boolean | undefined,
     right: boolean | undefined,
     bottom: boolean | undefined,
     left: boolean | undefined
-) => (change: Size): OffsetAndSize => {
+) => (change: SizeNumbers): OffsetAndSizeNumbers => {
     const positionLeft = left
         ? oldOffsetAndSize.left + change.width
         : oldOffsetAndSize.left;
@@ -174,14 +174,14 @@ const applyToOriginalSize = (
     const positionWidth = left
         ? oldOffsetAndSize.width - change.width
         : right
-            ? oldOffsetAndSize.width + change.width
-            : oldOffsetAndSize.width;
+        ? oldOffsetAndSize.width + change.width
+        : oldOffsetAndSize.width;
 
     const positionHeight = top
         ? oldOffsetAndSize.height - change.height
         : bottom
-            ? oldOffsetAndSize.height + change.height
-            : oldOffsetAndSize.height;
+        ? oldOffsetAndSize.height + change.height
+        : oldOffsetAndSize.height;
 
     return {
         left: positionLeft,
@@ -194,7 +194,9 @@ const applyToOriginalSize = (
 /**
  * Limit the Size to a twenty pixel minimum height and width.
  */
-const limitToTwentyPxMinimum = (position: OffsetAndSize): OffsetAndSize => ({
+const limitToTwentyPxMinimum = (
+    position: OffsetAndSizeNumbers
+): OffsetAndSizeNumbers => ({
     ...position,
     height: Math.max(20, position.height),
     width: Math.max(20, position.width),
@@ -205,8 +207,8 @@ const limitToTwentyPxMinimum = (position: OffsetAndSize): OffsetAndSize => ({
  * will be forced into the provided aspect ratio.
  */
 const lockAspectRatio = (shouldLock: boolean, aspectRatio: number) => (
-    position: OffsetAndSize
-): OffsetAndSize => {
+    position: OffsetAndSizeNumbers
+): OffsetAndSizeNumbers => {
     if (!shouldLock) {
         return position;
     }
@@ -233,13 +235,13 @@ const lockAspectRatio = (shouldLock: boolean, aspectRatio: number) => (
  * the perceived visual position the same.
  */
 const offsetForVisualConsistency = (
-    oldOffsetAndSize: OffsetAndSize,
+    oldOffsetAndSize: OffsetAndSizeNumbers,
     transformationMatrix: Matrix,
     top?: boolean,
     right?: boolean,
     bottom?: boolean,
     left?: boolean
-) => (newOffsetAndSize: OffsetAndSize): OffsetAndSize => {
+) => (newOffsetAndSize: OffsetAndSizeNumbers): OffsetAndSizeNumbers => {
     const oldCorners = visualCorners(oldOffsetAndSize, transformationMatrix);
     const newCorners = visualCorners(newOffsetAndSize, transformationMatrix);
 
@@ -274,7 +276,7 @@ const offsetForVisualConsistency = (
 const convertSizeToPercent = (
     shouldConvertToPercent: boolean,
     parent: HTMLElement
-) => (position: OffsetAndSize): OffsetAndSizeStrings =>
+) => (position: OffsetAndSizeNumbers): OffsetAndSize =>
     shouldConvertToPercent
         ? {
               left: `${round((position.left / parent.offsetWidth) * 100)}%`,
