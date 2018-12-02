@@ -17,15 +17,19 @@ single resize handle in the bottom-right hand corner. Positionable does not
 render any of its own elements, so you have all the flexibility you need
 to render things how you see fit.
 
-import { PropsTable } from 'docz'
+A more fully-featured example, with complete React project setup, is
+[available on CodeSandbox](https://codesandbox.io/s/j3j31kz0zv).
+
+import { PropsTable } from 'docz';
 
 import { Positionable } from '../src';
-import Playground from './PatchedPlayground'
+import Playground from './PatchedPlayground';
 
 <Playground style={{
     backgroundColor: '#f0f0f0',
     height: '400px',
     overflow: 'hidden',
+    padding: 0,
     position: 'relative',
 }}>
     <Positionable
@@ -38,14 +42,16 @@ import Playground from './PatchedPlayground'
             rotation: '0deg',
         }}
     >
-        {({ position, refHandlers }) => (
+        {({ renderedPosition, refHandlers }) => (
             <div
                 ref={refHandlers.container}
-                style={Object.assign({}, position, {
+                style={{
                     display: 'inline-block',
                     position: 'relative',
+                    width: renderedPosition.width,
+                    height: renderedPosition.height,
                     backgroundColor: "#ddd",
-                })}
+                }}
             >
                 <span>Hello!</span>
 
@@ -73,6 +79,7 @@ import Playground from './PatchedPlayground'
     }}>
         Non-Positionable div
     </div>
+
 </Playground>
 
 ## Props
@@ -88,21 +95,21 @@ You can use Positionable by provided a function as `children` or via the
 ### Children
 
 ```ts
-    <Positionable>
-        {({ position, refHandlers }) => (
-            <div ref={refHandlers.container} style={position} />
-        )}
-    </Positionable>
+<Positionable>
+    {({ position, refHandlers }) => (
+        <div ref={refHandlers.container} style={position} />
+    )}
+</Positionable>
 ```
 
 ### Render Prop
 
 ```ts
-    <Positionable
-        render={({ position, refHandlers }) => (
-            <div ref={refHandlers.container} style={position} />
-        )}
-    />
+<Positionable
+    render={({ position, refHandlers }) => (
+        <div ref={refHandlers.container} style={position} />
+    )}
+/>
 ```
 
 ## Ref Handlers
@@ -112,7 +119,7 @@ elements, and 8 resize directions elements. The only required ref is for the
 container. The available refs are attached to the `refHandlers` property on the
 render callback:
 
-* `container`
-* `nResize` `neResize` `eResize` `seResize`
-  `sResize` `swResize` `wResize` `nwResize`
-* `neRotate` `seRotate` `swRotate` `nwRotate`
+-   `container`
+-   `nResize` `neResize` `eResize` `seResize`
+    `sResize` `swResize` `wResize` `nwResize`
+-   `neRotate` `seRotate` `swRotate` `nwRotate`
