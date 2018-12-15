@@ -21,6 +21,7 @@ const Root = styled.svg<RotateHandleProps>`
     height: 15px;
     opacity: 0;
     cursor: pointer;
+    transform-origin: center;
 
     &:hover {
         opacity: 1;
@@ -42,15 +43,15 @@ const calculateLeft = (props: RotateHandleProps) =>
     props.left
         ? `calc(0% - ${OFFSET + 15}px)`
         : props.right
-            ? `calc(100% + ${OFFSET}px)`
-            : 'calc(50% - 7.5px)';
+        ? `calc(100% + ${OFFSET}px)`
+        : 'calc(50% - 7.5px)';
 
 const calculateTop = (props: RotateHandleProps) =>
     props.top
         ? `calc(0% - ${OFFSET + 15}px)`
         : props.bottom
-            ? `calc(100% + ${OFFSET}px)`
-            : 'calc(50% - 7.5px)';
+        ? `calc(100% + ${OFFSET}px)`
+        : 'calc(50% - 7.5px)';
 
 const RotateHandle: React.SFC<RotateHandleProps> = props => (
     <Root viewBox="0 0 24 24" {...props}>

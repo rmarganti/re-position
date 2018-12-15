@@ -64,6 +64,7 @@ const ResizeHandle = styled.div<ResizeHandleProps>`
         top: ${calculateTop};
         width: ${props.size}px;
         z-index: 100;
+        transform-origin: center;
 
         &:hover {
             opacity: 1;
