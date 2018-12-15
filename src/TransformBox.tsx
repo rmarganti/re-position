@@ -5,6 +5,7 @@ import { PositionableProps, RenderCallbackArgs } from './Positionable';
 import { PositionableContainerProps } from './PositionableContainer';
 import ResizeHandle from './ResizeHandle';
 import RotateHandle from './RotateHandle';
+import { scaleOfElement } from './utils/dom';
 import {
     calculateResizeObservableConfigs,
     calculateRotateObservableConfigs,
@@ -17,59 +18,123 @@ interface TransformBoxProps extends React.HTMLAttributes<HTMLDivElement> {
     rotatable: PositionableProps['rotatable'];
 }
 
-const Wrapper = styled.div`
+interface TransformBoxState {
+    scale: number;
+}
+
+const initialState: TransformBoxState = {
+    scale: 1,
+};
+
+interface RootProps {
+    scale: number;
+}
+const Root = styled.div<RootProps>`
     box-sizing: border-box;
-    outline: 1px dotted rgba(233, 30, 99, 0.5);
+    border: ${props => props.scale}px dotted rgba(233, 30, 99, 0.5);
     position: absolute;
     z-index: 1000;
 `;
 
-const TransformBox: React.SFC<TransformBoxProps> = ({
-    position,
-    refHandlers,
-    resizable,
-    rotatable,
-    style,
-    ...rest
-}) => (
-    <Wrapper
-        {...rest}
-        innerRef={refHandlers.container}
-        style={{
-            ...style,
-            height: `${position.height}`,
-            left: `${position.left}`,
-            position: 'absolute',
-            top: `${position.top}`,
-            transform: `rotate(${position.rotation})`,
-            width: `${position.width}`,
-        }}
-    >
-        {resizable &&
-            calculateResizeObservableConfigs(
-                Array.isArray(resizable) ? resizable : undefined
-            ).map(resizablePosition => (
-                <ResizeHandle
-                    key={resizablePosition.refHandlerName}
-                    innerRef={refHandlers[resizablePosition.refHandlerName]}
-                    top={resizablePosition.top}
-                    right={resizablePosition.right}
-                    bottom={resizablePosition.bottom}
-                    left={resizablePosition.left}
-                />
-            ))}
-        {rotatable &&
-            calculateRotateObservableConfigs().map(rotatablePosition => (
-                <RotateHandle
-                    key={rotatablePosition.refHandlerName}
-                    innerRef={refHandlers[rotatablePosition.refHandlerName]}
-                    top={rotatablePosition.top}
-                    right={rotatablePosition.right}
-                    bottom={rotatablePosition.bottom}
-                    left={rotatablePosition.left}
-                />
-            ))}
-    </Wrapper>
-);
+class TransformBox extends React.Component<
+    TransformBoxProps,
+    TransformBoxState
+> {
+    public state = initialState;
+
+    public componentDidMount() {
+        this.calculateScale();
+    }
+
+    public componentDidCatch() {
+        this.calculateScale();
+    }
+
+    public render() {
+        const {
+            position,
+            refHandlers,
+            resizable,
+            rotatable,
+            style,
+            ...rest
+        } = this.props;
+
+        const { scale } = this.state;
+
+        return (
+            <Root
+                {...rest}
+                innerRef={refHandlers.container}
+                scale={scale}
+                style={{
+                    ...style,
+                    height: `${position.height}`,
+                    left: `${position.left}`,
+                    top: `${position.top}`,
+                    transform: `rotate(${position.rotation})`,
+                    width: `${position.width}`,
+                }}
+            >
+                {resizable &&
+                    calculateResizeObservableConfigs(
+                        Array.isArray(resizable) ? resizable : undefined
+                    ).map(resizablePosition => (
+                        <ResizeHandle
+                            key={resizablePosition.refHandlerName}
+                            innerRef={
+                                refHandlers[resizablePosition.refHandlerName]
+                            }
+                            top={resizablePosition.top}
+                            right={resizablePosition.right}
+                            bottom={resizablePosition.bottom}
+                            left={resizablePosition.left}
+                            style={{ transform: `scale(${scale})` }}
+                        />
+                    ))}
+                {rotatable &&
+                    calculateRotateObservableConfigs().map(
+                        rotatablePosition => (
+                            <RotateHandle
+                                key={rotatablePosition.refHandlerName}
+                                innerRef={
+                                    refHandlers[
+                                        rotatablePosition.refHandlerName
+                                    ]
+                                }
+                                top={rotatablePosition.top}
+                                right={rotatablePosition.right}
+                                bottom={rotatablePosition.bottom}
+                                left={rotatablePosition.left}
+                                style={{ transform: `scale(${scale})` }}
+                            />
+                        )
+                    )}
+            </Root>
+        );
+    }
+
+    /**
+     * Determine how much visual elements like handles and borders need to be scaled
+     * in order to nullify any scale done to the container or its ancestors.
+     */
+    private calculateScale = () => {
+        const { refHandlers } = this.props;
+        const { container: containerRef } = refHandlers;
+
+        if (!containerRef.current) {
+            return;
+        }
+
+        const containerScale = scaleOfElement(containerRef.current);
+        const scale = 1 / containerScale;
+
+        if (this.state.scale === scale) {
+            return;
+        }
+
+        this.setState({ scale });
+    };
+}
 
 export default TransformBox;

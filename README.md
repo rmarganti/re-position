@@ -8,9 +8,8 @@ intuitive resize and rotation handles is harder than you would imagine
 
 ![Example](./documentation/re-position.gif)
 
-
 ## Example Projects
 
-* [Basic Typescript RepositionableContainer Example](https://codesandbox.io/s/wpkw5jyy7)
-* Basic Javascript RepositionableContainer Example (TODO)
-* Positionable Example (TODO)
+-   [Basic RepositionableContainer Typescript Example](https://codesandbox.io/s/wpkw5jyy7)
+-   [Custom Positionable Typescript Example](https://codesandbox.io/s/j3j31kz0zv)
+-   Javascript Examples (Coming soon)
