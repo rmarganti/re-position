@@ -1,64 +1,64 @@
 {
-    "name": "re-position",
-    "version": "0.1.0",
-    "main": "lib/index.js",
-    "types": "lib/index.d.ts",
-    "files": [
-        "lib"
+  "name": "re-position",
+  "version": "0.2.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "build": "rimraf lib && npm run build-lib && npm run build-docs",
+    "build-docs": "docz build",
+    "build-lib": "tsc",
+    "dev": "docz dev",
+    "test": "jest"
+  },
+  "repository": "https://github.com/rmarganti/re-position",
+  "author": "Ryan Marganti <ryanmarganti@soulsizzle.com>",
+  "license": "MIT",
+  "dependencies": {
+    "rxjs": "^6.0.0",
+    "styled-components": "^3.0.0",
+    "transformation-matrix": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/enzyme": "^3.1.10",
+    "@types/jest": "^22.2.2",
+    "@types/node": "10.1.4",
+    "@types/react": "^16.3.5",
+    "babel-core": "^6.26.0",
+    "codemirror": "^5.41.0",
+    "docz": "^0.12.5",
+    "docz-theme-default": "^0.12.5",
+    "enzyme": "^3.3.0",
+    "enzyme-adapter-react-16": "^1.6.0",
+    "jest": "^22.4.3",
+    "prettier": "^1.13.5",
+    "react": "^16.6.0",
+    "react-dom": "^16.6.0",
+    "rimraf": "^2.6.2",
+    "ts-jest": "^22.4.2",
+    "tslint": "^5.10.0",
+    "tslint-config-prettier": "^1.13.0",
+    "tslint-plugin-prettier": "^1.3.0",
+    "typescript": "^2.8.1"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
     ],
-    "scripts": {
-        "build": "rimraf lib && npm run build-lib && npm run build-docs",
-        "build-docs": "docz build",
-        "build-lib": "tsc",
-        "dev": "docz dev",
-        "test": "jest"
-    },
-    "repository": "https://github.com/rmarganti/re-position",
-    "author": "Ryan Marganti <ryanmarganti@soulsizzle.com>",
-    "license": "MIT",
-    "dependencies": {
-        "rxjs": "^6.0.0",
-        "styled-components": "^3.0.0",
-        "transformation-matrix": "^1.0.0"
-    },
-    "devDependencies": {
-        "@types/enzyme": "^3.1.10",
-        "@types/jest": "^22.2.2",
-        "@types/node": "10.1.4",
-        "@types/react": "^16.3.5",
-        "babel-core": "^6.26.0",
-        "codemirror": "^5.41.0",
-        "docz": "^0.12.5",
-        "docz-theme-default": "^0.12.5",
-        "enzyme": "^3.3.0",
-        "enzyme-adapter-react-16": "^1.6.0",
-        "jest": "^22.4.3",
-        "prettier": "^1.13.5",
-        "react": "^16.6.0",
-        "react-dom": "^16.6.0",
-        "rimraf": "^2.6.2",
-        "ts-jest": "^22.4.2",
-        "tslint": "^5.10.0",
-        "tslint-config-prettier": "^1.13.0",
-        "tslint-plugin-prettier": "^1.3.0",
-        "typescript": "^2.8.1"
-    },
-    "jest": {
-        "moduleFileExtensions": [
-            "ts",
-            "tsx",
-            "js"
-        ],
-        "setupTestFrameworkScriptFile": "<rootDir>/testingConfig.ts",
-        "testEnvironment": "jsdom",
-        "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx)$",
-        "testURL": "http://localhost",
-        "transform": {
-            ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
-        }
-    },
-    "peerDependencies": {
-        "react": "^16.0.0",
-        "react-dom": "^16.0.0"
+    "setupTestFrameworkScriptFile": "<rootDir>/testingConfig.ts",
+    "testEnvironment": "jsdom",
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx)$",
+    "testURL": "http://localhost",
+    "transform": {
+      ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     }
+  },
+  "peerDependencies": {
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0"
+  }
 }
