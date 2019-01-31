@@ -11,7 +11,8 @@ import {
     calculateRotateObservableConfigs,
 } from './utils/misc';
 
-interface TransformBoxProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface TransformBoxProps
+    extends React.HTMLAttributes<HTMLDivElement> {
     position: RenderCallbackArgs['renderedPosition'];
     refHandlers: RenderCallbackArgs['refHandlers'];
     resizable: PositionableContainerProps['resizable'];
@@ -36,7 +37,7 @@ const Root = styled.div<RootProps>`
     z-index: 1000;
 `;
 
-class TransformBox extends React.Component<
+export class TransformBox extends React.Component<
     TransformBoxProps,
     TransformBoxState
 > {

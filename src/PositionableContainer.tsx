@@ -49,7 +49,7 @@ export interface PositionableContainerProps {
     style?: React.CSSProperties;
 }
 
-const PositionableContainer: React.SFC<PositionableContainerProps> = ({
+export const PositionableContainer: React.SFC<PositionableContainerProps> = ({
     children,
     disabled,
     Element = 'div',
