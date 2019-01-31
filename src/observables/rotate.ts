@@ -75,8 +75,15 @@ type AngleFromPointCalculator = (x: number, y: number) => number;
 const translateRotation = (
     angleCalculator: AngleFromPointCalculator,
     initialAngle: number
-) => (e: MouseEvent): RotationNumber => ({
-    rotation: `${round(
-        angleCalculator(e.clientX, e.clientY) - initialAngle
-    )}deg`,
-});
+) => (e: MouseEvent): RotationNumber => {
+    const interval = e.shiftKey ? 15 : 0.1;
+
+    const angle = round(
+        angleCalculator(e.clientX, e.clientY) - initialAngle,
+        interval
+    );
+
+    return {
+        rotation: `${angle}deg`,
+    };
+};

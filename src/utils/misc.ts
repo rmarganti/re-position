@@ -84,7 +84,7 @@ export const snapObjectValues = (snapTo?: number) => <T extends {}>(
             const inputValue = input[key];
             const outputValue =
                 typeof inputValue === 'number'
-                    ? snapTo * Math.round(inputValue / snapTo)
+                    ? round(inputValue, snapTo)
                     : inputValue;
 
             return Object.assign({}, carrier, {
@@ -145,10 +145,13 @@ export const calculateRotateObservableConfigs = (): ObservableConfig[] =>
     }));
 
 /**
- * Round a number to a given precision.
+ * Round a number to a given interval. It is precise to, at most,
+ * 2 decimal points to avoid floating point rounding errors.
  */
-export const round = (value: number, precision: number = 1): number =>
-    +value.toFixed(precision);
+export const round = (value: number, interval: number = 0.1): number => {
+    const result = Math.round(value / interval) * interval;
+    return +result.toFixed(2);
+};
 
 /**
  * Check if a variable is a function.

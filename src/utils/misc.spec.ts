@@ -3,6 +3,7 @@ import {
     convertOffsetToPercentOrPixels,
     distanceBetweenPoints,
     objectsAreEqual,
+    round,
     snapObjectValues,
 } from './misc';
 import { defineOffsetGetters } from './testing';
@@ -110,6 +111,22 @@ describe('utils/misc', () => {
                 four: -5,
                 five: { inner: 'five' },
             });
+        });
+    });
+
+    describe('round()', () => {
+        it('rounds to integer intervals', () => {
+            expect(round(10, 15)).toEqual(15);
+            expect(round(5, 15)).toEqual(0);
+            expect(round(-10, 15)).toEqual(-15);
+            expect(round(-5, 15)).toEqual(0);
+        });
+
+        it('rounds to decimal intervals', () => {
+            expect(round(5.12, 0.1)).toEqual(5.1);
+            expect(round(5.19, 0.1)).toEqual(5.2);
+            expect(round(-5.12, 0.1)).toEqual(-5.1);
+            expect(round(-5.19, 0.1)).toEqual(-5.2);
         });
     });
 });
