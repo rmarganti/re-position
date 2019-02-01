@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-interface RotateHandleProps extends React.HTMLAttributes<SVGSVGElement> {
+export interface RotateHandleProps extends React.HTMLAttributes<SVGSVGElement> {
     borderColor?: string;
     bottom?: boolean;
     hidden?: boolean;
@@ -53,7 +53,7 @@ const calculateTop = (props: RotateHandleProps) =>
         ? `calc(100% + ${OFFSET}px)`
         : 'calc(50% - 7.5px)';
 
-const RotateHandle: React.SFC<RotateHandleProps> = props => (
+export const RotateHandle: React.SFC<RotateHandleProps> = props => (
     <Root viewBox="0 0 24 24" {...props}>
         <path
             fill="#000000"

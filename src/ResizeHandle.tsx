@@ -1,7 +1,8 @@
 import * as React from 'react';
 import styled, { css } from 'styled-components';
 
-interface ResizeHandleProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface ResizeHandleProps
+    extends React.HTMLAttributes<HTMLDivElement> {
     borderColor?: string;
     bottom?: boolean;
     color?: string;
@@ -48,7 +49,7 @@ const calculateCursor = (
     return 'move';
 };
 
-const ResizeHandle = styled.div<ResizeHandleProps>`
+export const ResizeHandle = styled.div<ResizeHandleProps>`
     ${props => css`
         background-color: ${props.color};
         border: 1px solid ${props.borderColor};

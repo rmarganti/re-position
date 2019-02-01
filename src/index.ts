@@ -1,17 +1,20 @@
 /**
  * Main Exports
  */
-export { default as Positionable } from './Positionable';
-export { default as PositionableContainer } from './PositionableContainer';
+export { Positionable, PositionableProps } from './Positionable';
+export {
+    PositionableContainer,
+    PositionableContainerProps,
+} from './PositionableContainer';
 
 /**
  * Support Components
  */
-export { default as ResizeHandle } from './ResizeHandle';
-export { default as RotateHandle } from './RotateHandle';
-export { default as TransformBox } from './TransformBox';
+export { ResizeHandle, ResizeHandleProps } from './ResizeHandle';
+export { RotateHandle, RotateHandleProps } from './RotateHandle';
+export { TransformBox, TransformBoxProps } from './TransformBox';
 
 /**
- * Types
+ * Additional Types
  */
 export { Position, ResizeHandleLocation } from './types';
