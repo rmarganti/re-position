@@ -27,16 +27,6 @@ const initialState: TransformBoxState = {
     scale: 1,
 };
 
-interface RootProps {
-    scale: number;
-}
-const Root = styled.div<RootProps>`
-    box-sizing: border-box;
-    border: ${props => props.scale}px dotted rgba(233, 30, 99, 0.5);
-    position: absolute;
-    z-index: 1000;
-`;
-
 export class TransformBox extends React.Component<
     TransformBoxProps,
     TransformBoxState
@@ -90,6 +80,7 @@ export class TransformBox extends React.Component<
                             right={resizablePosition.right}
                             bottom={resizablePosition.bottom}
                             left={resizablePosition.left}
+                            rotation={parseInt(position.rotation, 10)}
                             style={{ transform: `scale(${scale})` }}
                         />
                     ))}
@@ -137,5 +128,15 @@ export class TransformBox extends React.Component<
         this.setState({ scale });
     };
 }
+
+interface RootProps {
+    scale: number;
+}
+const Root = styled.div<RootProps>`
+    box-sizing: border-box;
+    border: ${props => props.scale}px dotted rgba(233, 30, 99, 0.5);
+    position: absolute;
+    z-index: 1000;
+`;
 
 export default TransformBox;
