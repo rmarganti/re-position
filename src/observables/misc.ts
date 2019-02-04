@@ -48,7 +48,7 @@ export const requestAnimationFramesUntil = (
 const isKeydown = (e: KeyboardEvent) => e.type === 'keydown';
 
 /**
- * Has the pressed state of a key changed between to events?
+ * Has the pressed state of a key changed between two events?
  */
 const pressedStateHasChanged = (x: KeyboardEvent, y: KeyboardEvent) =>
     x.type === y.type;
