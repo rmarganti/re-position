@@ -1,5 +1,13 @@
 import { animationFrameScheduler, fromEvent, interval, Observable } from 'rxjs';
-import { takeUntil, withLatestFrom } from 'rxjs/operators';
+import {
+    distinctUntilChanged,
+    filter,
+    map,
+    merge,
+    startWith,
+    takeUntil,
+    withLatestFrom,
+} from 'rxjs/operators';
 
 export const documentMouseMove$ = fromEvent<MouseEvent>(document, 'mousemove');
 export const documentMouseUp$ = fromEvent<MouseEvent>(document, 'mouseup');
@@ -33,3 +41,26 @@ export const requestAnimationFramesUntil = (
 
     return throttled$;
 };
+
+/**
+ * Is the KeyboardEvent for a key down?
+ */
+const isKeydown = (e: KeyboardEvent) => e.type === 'keydown';
+
+/**
+ * Has the pressed state of a key changed between two events?
+ */
+const pressedStateHasChanged = (x: KeyboardEvent, y: KeyboardEvent) =>
+    x.type === y.type;
+
+/**
+ * Observable of whether shift is currently being held down.
+ */
+const SHIFT_KEY_CODE = 16;
+export const shiftIsPressed$: Observable<boolean> = keyDowns$.pipe(
+    merge(keyUps$),
+    filter(e => e.keyCode === SHIFT_KEY_CODE),
+    distinctUntilChanged(pressedStateHasChanged),
+    map(isKeydown),
+    startWith(false)
+);

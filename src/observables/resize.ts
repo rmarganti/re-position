@@ -1,5 +1,11 @@
 import { fromEvent, Observable } from 'rxjs';
-import { distinctUntilChanged, filter, map, switchMap } from 'rxjs/operators';
+import {
+    distinctUntilChanged,
+    filter,
+    map,
+    switchMap,
+    withLatestFrom,
+} from 'rxjs/operators';
 
 import { Matrix } from 'transformation-matrix';
 import {
@@ -25,6 +31,7 @@ import {
     documentMouseMove$,
     documentMouseUp$,
     requestAnimationFramesUntil,
+    shiftIsPressed$,
 } from './misc';
 
 interface ResizeObservableOptions {
@@ -91,9 +98,9 @@ export const createResizeObservable = ({
                 map(limitToTwentyPxMinimum),
                 map(snapObjectValues(snapTo)),
                 distinctUntilChanged(),
+                withLatestFrom(shiftIsPressed$),
                 map(
                     lockAspectRatio(
-                        e.shiftKey,
                         oldOffsetAndSize.width / oldOffsetAndSize.height
                     )
                 ),
@@ -206,9 +213,10 @@ const limitToTwentyPxMinimum = (
  * If `shouldLock` is `true`, the new Size
  * will be forced into the provided aspect ratio.
  */
-const lockAspectRatio = (shouldLock: boolean, aspectRatio: number) => (
-    position: OffsetAndSizeNumbers
-): OffsetAndSizeNumbers => {
+const lockAspectRatio = (aspectRatio: number) => ([position, shouldLock]: [
+    OffsetAndSizeNumbers,
+    boolean
+]): OffsetAndSizeNumbers => {
     if (!shouldLock) {
         return position;
     }
