@@ -28,6 +28,12 @@ export interface PositionableProps {
     disabled?: boolean;
 
     /**
+     * By default, if `movable` is `true`, both mouse and keyboard movement
+     * are enabled. This prop allows keyboard-based movement to be disabled.
+     */
+    disableKeyboardMovement?: boolean;
+
+    /**
      * Members of the same group will respond
      * to each other's drag and drop events.
      */
@@ -166,7 +172,14 @@ export class Positionable extends React.Component<
      * Handle subscribing to and unsubscribing from Observables.
      */
     private buildSubscriptions() {
-        const { disabled, movable, resizable, rotatable, snapTo } = this.props;
+        const {
+            disabled,
+            disableKeyboardMovement,
+            movable,
+            resizable,
+            rotatable,
+            snapTo,
+        } = this.props;
         const { left, width } = this.state;
         const group = this.props.group || randomString();
 
@@ -201,13 +214,15 @@ export class Positionable extends React.Component<
                 .pipe(takeUntil(this.destroy$))
                 .subscribe(newCoords => this.setState(newCoords));
 
-            createKeyboardMoveObservable({
-                element: this.refHandlers.container.current,
-                onComplete: this.handleUpdate,
-                shouldConvertToPercent: left.includes('%'),
-            })
-                .pipe(takeUntil(this.destroy$))
-                .subscribe(newCoords => this.setState(newCoords));
+            if (!disableKeyboardMovement) {
+                createKeyboardMoveObservable({
+                    element: this.refHandlers.container.current,
+                    onComplete: this.handleUpdate,
+                    shouldConvertToPercent: left.includes('%'),
+                })
+                    .pipe(takeUntil(this.destroy$))
+                    .subscribe(newCoords => this.setState(newCoords));
+            }
         }
 
         if (resizable) {

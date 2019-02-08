@@ -1,12 +1,4 @@
 {
-    "editor.formatOnSave": true,
-    "tslint.autoFixOnSave": true,
-    "search.exclude": {
-        "**/node_modules": true,
-        "**/*.html": true,
-        ".docz": true,
-        "lib": true
-    },
     "cSpell.words": [
         "Obvservable",
         "Positionable",
@@ -16,5 +8,14 @@
         "nesw",
         "nwse",
         "resizable"
-    ]
+    ],
+    "editor.formatOnSave": true,
+    "prettier.disableLanguages": ["markdown"],
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/*.html": true,
+        ".docz": true,
+        "lib": true
+    },
+    "tslint.autoFixOnSave": true
 }

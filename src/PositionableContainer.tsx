@@ -17,6 +17,11 @@ export interface PositionableContainerProps {
     Element?: React.ComponentType<any>;
 
     /**
+     * By default, if `movable` is `true`, both mouse and keyboard movement
+     * are enabled. This prop allows keyboard-based movement to be disabled.
+     */
+    disableKeyboardMovement?: boolean;
+    /**
      * Members of the same group will respond
      * to each other's drag and drop events.
      */
@@ -52,20 +57,22 @@ export interface PositionableContainerProps {
 export const PositionableContainer: React.SFC<PositionableContainerProps> = ({
     children,
     disabled,
+    disableKeyboardMovement,
     Element = 'div',
     group,
-    rotatable,
-    resizable,
     movable,
-    position,
     onUpdate,
+    position,
     render,
+    resizable,
+    rotatable,
     snapTo,
     style,
     ...rest
 }) => (
     <Positionable
         disabled={disabled}
+        disableKeyboardMovement={disableKeyboardMovement}
         group={group}
         movable={movable}
         onUpdate={onUpdate}
