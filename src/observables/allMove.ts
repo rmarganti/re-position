@@ -10,14 +10,10 @@ import {
 
 import { Offset, OffsetNumbers } from '../types';
 import { offsetOfElement } from '../utils/dom';
-import {
-    convertOffsetToPercentOrPixels,
-    snapObjectValues,
-} from '../utils/misc';
+import { convertOffsetToPercentOrPixels } from '../utils/misc';
 
 interface AllMoveObservableOptions {
-    // HTML element that  should be monitored
-    // and whose calculations should be based on.
+    // HTML element used as a basis for all calculations.
     element: HTMLElement;
 
     // Elements whose observables belong to the same
@@ -29,9 +25,6 @@ interface AllMoveObservableOptions {
 
     // Should px-based measurements be converted to a % of the parent size.
     shouldConvertToPercent?: boolean;
-
-    // Round values to an interval of this number.
-    snapTo?: number;
 }
 
 interface AllMovePayload {
@@ -48,7 +41,6 @@ export const createAllMoveObservable = ({
     group,
     onComplete,
     shouldConvertToPercent = true,
-    snapTo = 1,
 }: AllMoveObservableOptions): Observable<Offset> =>
     allMoveStart$.pipe(
         switchMap(() => {
@@ -56,11 +48,7 @@ export const createAllMoveObservable = ({
                 takeUntil(allMoveEnd$),
                 filter(isMemberOfGroup(group)),
                 pluck('offset'),
-                translateMovementToPosition(
-                    element,
-                    shouldConvertToPercent,
-                    snapTo
-                )
+                translateMovementToPosition(element, shouldConvertToPercent)
             );
 
             move$.subscribe({
@@ -79,12 +67,10 @@ const isMemberOfGroup = (group: string) => (payload: AllMovePayload) =>
 
 const translateMovementToPosition = (
     element: HTMLElement,
-    shouldConvertToPercent: boolean,
-    snapTo: number
+    shouldConvertToPercent: boolean
 ) => (observable$: Observable<OffsetNumbers>) =>
     observable$.pipe(
         map(addOffsets(offsetOfElement(element))),
-        map(snapObjectValues(snapTo)),
         distinctUntilChanged(),
         map(
             convertOffsetToPercentOrPixels(

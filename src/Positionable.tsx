@@ -200,6 +200,7 @@ export class Positionable extends React.Component<
                 handle:
                     this.refHandlers.dnd.current ||
                     this.refHandlers.container.current,
+                snapTo,
             })
                 .pipe(takeUntil(this.destroy$))
                 .subscribe();
@@ -209,7 +210,6 @@ export class Positionable extends React.Component<
                 group,
                 onComplete: this.handleUpdate,
                 shouldConvertToPercent: left.includes('%'),
-                snapTo,
             })
                 .pipe(takeUntil(this.destroy$))
                 .subscribe(newCoords => this.setState(newCoords));
