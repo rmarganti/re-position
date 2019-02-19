@@ -51,6 +51,18 @@ export interface PositionableContainerProps {
     /** Snap drag and resize to pixels of this interval. */
     snapTo?: number;
 
+    /**
+     * Snap X drag and resize to pixels of this interval (Overwrite snapTo in X dimension).
+     * set snapX as `0` to restrict moving/resizing to vertical
+     */
+    snapX?: number;
+
+    /**
+     * Snap Y drag and resize to pixels of this interval (Overwrite snapTo in Y dimension).
+     * set snapY as `0` to restrict moving/resizing to horizontal
+     */
+    snapY?: number;
+
     style?: React.CSSProperties;
 }
 
@@ -67,6 +79,8 @@ export const PositionableContainer: React.SFC<PositionableContainerProps> = ({
     resizable,
     rotatable,
     snapTo,
+    snapX,
+    snapY,
     style,
     ...rest
 }) => (
@@ -80,6 +94,8 @@ export const PositionableContainer: React.SFC<PositionableContainerProps> = ({
         resizable={!!resizable}
         rotatable={rotatable}
         snapTo={snapTo}
+        snapX={snapX}
+        snapY={snapY}
         render={({ renderedPosition, refHandlers }) => (
             <React.Fragment>
                 <Element

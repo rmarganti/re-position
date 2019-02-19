@@ -1,4 +1,9 @@
-import { Offset, OffsetNumbers, ResizeHandleLocation } from '../types';
+import {
+    Offset,
+    OffsetNumbers,
+    Position,
+    ResizeHandleLocation,
+} from '../types';
 
 /**
  * Calculate the angle between two points..
@@ -72,19 +77,24 @@ export const convertOffsetToPercentOrPixels = (
  * Snap/Restrict all of an object's numeric
  * values to multiple of a number.
  */
-export const snapObjectValues = (snapTo?: number) => <T extends {}>(
+type PositionKey = keyof Position;
+
+export const snapObjectValues = (snapX?: number, snapY?: number) => <
+    T extends {}
+>(
     input: T
 ): T => {
-    if (!snapTo) {
+    if (isBothSnapsUndefined(snapX, snapY)) {
         return input;
     }
 
     return Object.keys(input).reduce(
-        (carrier, key) => {
+        (carrier, key: PositionKey) => {
             const inputValue = input[key];
+            const snapValue = assignSnapToKey(key, snapX, snapY);
             const outputValue =
                 typeof inputValue === 'number'
-                    ? round(inputValue, snapTo)
+                    ? round(inputValue, snapValue)
                     : inputValue;
 
             return Object.assign({}, carrier, {
@@ -94,6 +104,55 @@ export const snapObjectValues = (snapTo?: number) => <T extends {}>(
         {} as T
     );
 };
+
+/**
+ * Assign snapX or snapY appropiately to a position key
+ */
+export const assignSnapToKey = (
+    key: PositionKey,
+    snapX?: number,
+    snapY?: number
+) => {
+    switch (key) {
+        case 'left':
+            return snapX;
+        case 'width':
+            return snapX;
+        case 'top':
+            return snapY;
+        case 'height':
+            return snapY;
+        default:
+            return 1;
+    }
+};
+
+/**
+ * Check if both snap dimension is not defined
+ * do not use !snapX or !snapY as it can be 0
+ */
+export const isBothSnapsUndefined = (snapX?: number, snapY?: number) =>
+    snapX === undefined && snapY === undefined;
+
+/**
+ * consolidate snap values
+ * snapTo converted to snapX & snapY
+ * snapX & snapY has higher priority than snapTo
+ * snapX === 0, will prevent X from resizing
+ * snapY === 0, will prevent Y from resizing
+ */
+export interface SnapValues {
+    snapX?: number;
+    snapY?: number;
+}
+export const getSnapValues = (
+    snapTo?: number,
+    snapX?: number,
+    snapY?: number
+): SnapValues => ({
+    snapX: snapX === undefined ? snapTo : snapX,
+    snapY: snapY === undefined ? snapTo : snapY,
+});
 
 interface ObservableConfig {
     refHandlerName: string;

@@ -24,6 +24,7 @@ import {
 import {
     angleBetweenPoints,
     distanceBetweenPoints,
+    getSnapValues,
     round,
     snapObjectValues,
 } from '../utils/misc';
@@ -44,6 +45,8 @@ interface ResizeObservableOptions {
     left?: boolean;
     shouldConvertToPercent?: boolean;
     snapTo?: number;
+    snapX?: number;
+    snapY?: number;
 }
 
 /*
@@ -59,6 +62,8 @@ export const createResizeObservable = ({
     onComplete,
     shouldConvertToPercent = true,
     snapTo,
+    snapX,
+    snapY,
     top,
     right,
     bottom,
@@ -76,6 +81,8 @@ export const createResizeObservable = ({
             const oldRotation = rotationOfElement(element);
             const transformationMatrix = transformationMatrixOfElement(element);
             const scale = scaleOfElement(element);
+
+            const snapValues = getSnapValues(snapTo, snapX, snapY);
 
             const move$ = documentMouseMove$.pipe(
                 map(
@@ -96,7 +103,7 @@ export const createResizeObservable = ({
                     )
                 ),
                 map(limitToTwentyPxMinimum),
-                map(snapObjectValues(snapTo)),
+                map(snapObjectValues(snapValues.snapX, snapValues.snapY)),
                 distinctUntilChanged(),
                 withLatestFrom(shiftIsPressed$),
                 map(

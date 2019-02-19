@@ -2,6 +2,7 @@ import {
     angleBetweenPoints,
     convertOffsetToPercentOrPixels,
     distanceBetweenPoints,
+    getSnapValues,
     objectsAreEqual,
     round,
     snapObjectValues,
@@ -95,21 +96,46 @@ describe('utils/misc', () => {
     describe('snapObjectValues()', () => {
         it("rounds an object's values to a multiple of a number", () => {
             const input = {
-                one: 71,
-                two: 'two',
-                three: 50.3,
-                four: -4,
-                five: { inner: 'five' },
+                height: 50.3,
+                width: 71,
+                top: -4,
+                left: 10.6,
             };
 
-            const output = snapObjectValues(5)(input);
+            const output = snapObjectValues(5, 5)(input);
 
             expect(output).toEqual({
-                one: 70,
-                two: 'two',
-                three: 50,
-                four: -5,
-                five: { inner: 'five' },
+                height: 50,
+                width: 70,
+                top: -5,
+                left: 10,
+            });
+        });
+
+        it('applies snapX and snapY properly on the different position keys', () => {
+            const input = {
+                height: 50.3,
+                width: 71,
+                top: -4,
+                left: 10.6,
+            };
+
+            const output = snapObjectValues(5, 100)(input);
+
+            expect(output).toEqual({
+                height: 100,
+                width: 70,
+                top: 0,
+                left: 10,
+            });
+
+            const output2 = snapObjectValues(100, 5)(input);
+
+            expect(output2).toEqual({
+                height: 50,
+                width: 100,
+                top: -5,
+                left: 0,
             });
         });
     });
@@ -127,6 +153,40 @@ describe('utils/misc', () => {
             expect(round(5.19, 0.1)).toEqual(5.2);
             expect(round(-5.12, 0.1)).toEqual(-5.1);
             expect(round(-5.19, 0.1)).toEqual(-5.2);
+        });
+    });
+
+    describe('getSnapValues()', () => {
+        it('gets correct snap value from snapTo', () => {
+            expect(getSnapValues(10)).toEqual({ snapX: 10, snapY: 10 });
+        });
+
+        it('gets correct snap value from snapX, snapY', () => {
+            expect(getSnapValues(undefined, 10, 20)).toEqual({
+                snapX: 10,
+                snapY: 20,
+            });
+        });
+
+        it('gets snapX, snapY and overwrites snapTo', () => {
+            expect(getSnapValues(50, 10, 20)).toEqual({
+                snapX: 10,
+                snapY: 20,
+            });
+        });
+
+        it('gets snapX from snapTo', () => {
+            expect(getSnapValues(50, undefined, 20)).toEqual({
+                snapX: 50,
+                snapY: 20,
+            });
+        });
+
+        it('gets snapY from snapTo', () => {
+            expect(getSnapValues(50, 10)).toEqual({
+                snapX: 10,
+                snapY: 50,
+            });
         });
     });
 });
