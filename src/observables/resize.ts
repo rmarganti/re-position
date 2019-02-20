@@ -26,7 +26,7 @@ import {
     distanceBetweenPoints,
     getSnapValues,
     round,
-    snapObjectValues,
+    snapPositionValues,
 } from '../utils/misc';
 import {
     documentMouseMove$,
@@ -45,8 +45,8 @@ interface ResizeObservableOptions {
     left?: boolean;
     shouldConvertToPercent?: boolean;
     snapTo?: number;
-    snapX?: number;
-    snapY?: number;
+    snapXTo?: number;
+    snapYTo?: number;
 }
 
 /*
@@ -62,8 +62,8 @@ export const createResizeObservable = ({
     onComplete,
     shouldConvertToPercent = true,
     snapTo,
-    snapX,
-    snapY,
+    snapXTo,
+    snapYTo,
     top,
     right,
     bottom,
@@ -82,7 +82,7 @@ export const createResizeObservable = ({
             const transformationMatrix = transformationMatrixOfElement(element);
             const scale = scaleOfElement(element);
 
-            const snapValues = getSnapValues(snapTo, snapX, snapY);
+            const snapValues = getSnapValues(snapTo, snapXTo, snapYTo);
 
             const move$ = documentMouseMove$.pipe(
                 map(
@@ -103,7 +103,7 @@ export const createResizeObservable = ({
                     )
                 ),
                 map(limitToTwentyPxMinimum),
-                map(snapObjectValues(snapValues.snapX, snapValues.snapY)),
+                map(snapPositionValues(snapValues)),
                 distinctUntilChanged(),
                 withLatestFrom(shiftIsPressed$),
                 map(

@@ -4,9 +4,10 @@ import { filter, map, skipWhile, switchMap, tap } from 'rxjs/operators';
 import { Offset, OffsetNumbers } from '../types';
 import { offsetOfElement, scaleOfElement } from '../utils/dom';
 import {
+    areBothSnapsUndefined,
     getSnapValues,
-    isBothSnapsUndefined,
-    snapObjectValues,
+    snapPositionValues,
+    SnapValues,
 } from '../utils/misc';
 import { allMoveEnd$, allMoveStart$, allMoveUpdate$ } from './allMove';
 import {
@@ -26,14 +27,14 @@ interface DndObservableOptions {
     // HTML element used as a target for mouse interactions.
     handle: HTMLElement;
 
-    // Round values to an interval of this number.
+    // Round position values to an interval of this number.
     snapTo?: number;
 
-    // Round value X to an interval of this number.
-    snapX?: number;
+    // Round `left` value to an interval of this number.
+    snapXTo?: number;
 
-    // Round value Y to an interval of this number.
-    snapY?: number;
+    // Round `top` value to an interval of this number.
+    snapYTo?: number;
 }
 
 /**
@@ -45,8 +46,8 @@ export const createDndObservable = ({
     group,
     handle,
     snapTo,
-    snapX,
-    snapY,
+    snapXTo,
+    snapYTo,
 }: DndObservableOptions): Observable<Offset> => {
     const mouseDown$ = fromEvent(handle, 'mousedown');
 
@@ -62,19 +63,13 @@ export const createDndObservable = ({
             // Account for CSS transform scale
             const scale = scaleOfElement(element);
 
-            // consolidate snap values from snapTo, snapX, snapY
-            const snapValues = getSnapValues(snapTo, snapX, snapY);
+            // consolidate snap values from snapTo, snapXTo, snapYTo
+            const snapValues = getSnapValues(snapTo, snapXTo, snapYTo);
 
             const move$ = documentMouseMove$.pipe(
                 map(changeFromPointToMouseEvent(e.clientX, e.clientY, scale)),
                 skipWhile(hasntMovedFivePixels),
-                map(
-                    adjustForSnap(
-                        originalOffset,
-                        snapValues.snapX,
-                        snapValues.snapY
-                    )
-                ),
+                map(adjustForSnap(originalOffset, snapValues)),
                 tap(notifyListeners(group))
             );
 
@@ -144,12 +139,10 @@ const hasntMovedFivePixels = (change: OffsetNumbers) =>
  * only the element that is being interacted with via mouse
  * will snap, with all other elements simply following along.
  */
-const adjustForSnap = (
-    original: OffsetNumbers,
-    snapX?: number,
-    snapY?: number
-) => (change: OffsetNumbers): OffsetNumbers => {
-    if (isBothSnapsUndefined(snapX, snapY)) {
+const adjustForSnap = (original: OffsetNumbers, snapValues: SnapValues) => (
+    change: OffsetNumbers
+): OffsetNumbers => {
+    if (areBothSnapsUndefined(snapValues)) {
         return change;
     }
 
@@ -158,7 +151,7 @@ const adjustForSnap = (
         top: original.top + change.top,
     };
 
-    const snapped = snapObjectValues(snapX, snapY)(unsnappedOffset);
+    const snapped = snapPositionValues(snapValues)(unsnappedOffset);
 
     const adjustedChange = {
         left: snapped.left - original.left,

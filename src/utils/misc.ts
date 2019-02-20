@@ -1,9 +1,4 @@
-import {
-    Offset,
-    OffsetNumbers,
-    Position,
-    ResizeHandleLocation,
-} from '../types';
+import { Offset, OffsetNumbers, ResizeHandleLocation } from '../types';
 
 /**
  * Calculate the angle between two points..
@@ -74,26 +69,22 @@ export const convertOffsetToPercentOrPixels = (
           };
 
 /**
- * Snap/Restrict all of an object's numeric
- * values to multiple of a number.
+ * Round all position properties (left, top, width, height)
+ * to an interval of the appropriate snap value.
  */
-type PositionKey = keyof Position;
-
-export const snapObjectValues = (snapX?: number, snapY?: number) => <
-    T extends {}
->(
+export const snapPositionValues = (snapValues: SnapValues) => <T extends {}>(
     input: T
 ): T => {
-    if (isBothSnapsUndefined(snapX, snapY)) {
+    if (areBothSnapsUndefined(snapValues)) {
         return input;
     }
 
     return Object.keys(input).reduce(
-        (carrier, key: PositionKey) => {
+        (carrier, key) => {
             const inputValue = input[key];
-            const snapValue = assignSnapToKey(key, snapX, snapY);
+            const snapValue = assignSnapToKey(key, snapValues);
             const outputValue =
-                typeof inputValue === 'number'
+                typeof snapValue === 'number' && typeof inputValue === 'number'
                     ? round(inputValue, snapValue)
                     : inputValue;
 
@@ -106,52 +97,44 @@ export const snapObjectValues = (snapX?: number, snapY?: number) => <
 };
 
 /**
- * Assign snapX or snapY appropiately to a position key
+ * Assign snapXTo or snapYTo appropriately to a position key.
  */
-export const assignSnapToKey = (
-    key: PositionKey,
-    snapX?: number,
-    snapY?: number
-) => {
+export const assignSnapToKey = (key: string, snapValues: SnapValues) => {
     switch (key) {
         case 'left':
-            return snapX;
+            return snapValues.x;
         case 'width':
-            return snapX;
+            return snapValues.x;
         case 'top':
-            return snapY;
+            return snapValues.y;
         case 'height':
-            return snapY;
+            return snapValues.y;
         default:
-            return 1;
+            return undefined;
     }
 };
 
 /**
- * Check if both snap dimension is not defined
- * do not use !snapX or !snapY as it can be 0
+ * Check if both snap dimension are not defined.
  */
-export const isBothSnapsUndefined = (snapX?: number, snapY?: number) =>
-    snapX === undefined && snapY === undefined;
+export const areBothSnapsUndefined = (snapValues: SnapValues) =>
+    snapValues.x === undefined && snapValues.y === undefined;
 
 /**
- * consolidate snap values
- * snapTo converted to snapX & snapY
- * snapX & snapY has higher priority than snapTo
- * snapX === 0, will prevent X from resizing
- * snapY === 0, will prevent Y from resizing
+ * Consolidate `snapTo`, `snapXTo`, and `snapYTo`
+ * values into single `x` and `y` values.
  */
 export interface SnapValues {
-    snapX?: number;
-    snapY?: number;
+    x?: number;
+    y?: number;
 }
 export const getSnapValues = (
     snapTo?: number,
-    snapX?: number,
-    snapY?: number
+    snapXTo?: number,
+    snapYTo?: number
 ): SnapValues => ({
-    snapX: snapX === undefined ? snapTo : snapX,
-    snapY: snapY === undefined ? snapTo : snapY,
+    x: snapXTo === undefined ? snapTo : snapXTo,
+    y: snapYTo === undefined ? snapTo : snapYTo,
 });
 
 interface ObservableConfig {

@@ -61,16 +61,18 @@ export interface PositionableProps {
     snapTo?: number;
 
     /**
-     * Snap X drag and resize to pixels of this interval (Overwrite snapTo in X dimension).
-     * set snapX as `0` to restrict moving/resizing to vertical
+     * Snap horizontal drag and resize to pixels of this interval
+     * (overwrites snapTo for horizontal values). Setting this value
+     * to `0` disables horizontal changes.
      */
-    snapX?: number;
+    snapXTo?: number;
 
     /**
-     * Snap Y drag and resize to pixels of this interval (Overwrite snapTo in Y dimension).
-     * set snapY as `0` to restrict moving/resizing to horizontal
+     * Snap vertical drag and resize to pixels of this interval
+     * (overwrites snapTo for vertical values). Setting this value
+     * to `0` disables vertical changes.
      */
-    snapY?: number;
+    snapYTo?: number;
 }
 
 type RenderCallback = (args: RenderCallbackArgs) => JSX.Element;
@@ -191,8 +193,8 @@ export class Positionable extends React.Component<
             resizable,
             rotatable,
             snapTo,
-            snapX,
-            snapY,
+            snapXTo,
+            snapYTo,
         } = this.props;
         const { left, width } = this.state;
         const group = this.props.group || randomString();
@@ -215,8 +217,8 @@ export class Positionable extends React.Component<
                     this.refHandlers.dnd.current ||
                     this.refHandlers.container.current,
                 snapTo,
-                snapX,
-                snapY,
+                snapXTo,
+                snapYTo,
             })
                 .pipe(takeUntil(this.destroy$))
                 .subscribe();
@@ -261,8 +263,8 @@ export class Positionable extends React.Component<
                     left: config.left,
                     shouldConvertToPercent: width.includes('%'),
                     snapTo,
-                    snapX,
-                    snapY,
+                    snapXTo,
+                    snapYTo,
                 })
                     .pipe(takeUntil(this.destroy$))
                     .subscribe(newPosition => this.setState(newPosition));

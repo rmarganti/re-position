@@ -5,7 +5,7 @@ import {
     getSnapValues,
     objectsAreEqual,
     round,
-    snapObjectValues,
+    snapPositionValues,
 } from './misc';
 import { defineOffsetGetters } from './testing';
 
@@ -93,49 +93,60 @@ describe('utils/misc', () => {
         });
     });
 
-    describe('snapObjectValues()', () => {
-        it("rounds an object's values to a multiple of a number", () => {
+    describe('snapPositionValues()', () => {
+        it("rounds an object's position properties to a multiple of a number", () => {
             const input = {
-                height: 50.3,
-                width: 71,
-                top: -4,
                 left: 10.6,
+                top: -4,
+                width: 71,
+                height: 50.3,
             };
 
-            const output = snapObjectValues(5, 5)(input);
+            const output = snapPositionValues({ x: 5, y: 5 })(input);
 
             expect(output).toEqual({
-                height: 50,
-                width: 70,
-                top: -5,
                 left: 10,
+                top: -5,
+                width: 70,
+                height: 50,
             });
         });
 
-        it('applies snapX and snapY properly on the different position keys', () => {
+        it("doesn't touch non-position properties or non-numbers", () => {
             const input = {
-                height: 50.3,
-                width: 71,
-                top: -4,
-                left: 10.6,
+                left: 'string',
+                five: { left: 'value' },
+                bana: 7,
             };
 
-            const output = snapObjectValues(5, 100)(input);
+            const output = snapPositionValues({ x: 5, y: 5 })(input);
+            expect(output).toEqual(input);
+        });
+
+        it('applies snapXTo and snapYTo properly on the different position keys', () => {
+            const input = {
+                left: 10.6,
+                width: 71,
+                top: -4,
+                height: 50.3,
+            };
+
+            const output = snapPositionValues({ x: 5, y: 100 })(input);
 
             expect(output).toEqual({
-                height: 100,
+                left: 10,
                 width: 70,
                 top: 0,
-                left: 10,
+                height: 100,
             });
 
-            const output2 = snapObjectValues(100, 5)(input);
+            const output2 = snapPositionValues({ x: 100, y: 5 })(input);
 
             expect(output2).toEqual({
-                height: 50,
+                left: 0,
                 width: 100,
                 top: -5,
-                left: 0,
+                height: 50,
             });
         });
     });
@@ -158,34 +169,34 @@ describe('utils/misc', () => {
 
     describe('getSnapValues()', () => {
         it('gets correct snap value from snapTo', () => {
-            expect(getSnapValues(10)).toEqual({ snapX: 10, snapY: 10 });
+            expect(getSnapValues(10)).toEqual({ x: 10, y: 10 });
         });
 
-        it('gets correct snap value from snapX, snapY', () => {
+        it('gets correct snap value from snapXTo, snapYTo', () => {
             expect(getSnapValues(undefined, 10, 20)).toEqual({
-                snapX: 10,
-                snapY: 20,
+                x: 10,
+                y: 20,
             });
         });
 
-        it('gets snapX, snapY and overwrites snapTo', () => {
+        it('gets snapXTo, snapYTo and overwrites snapTo', () => {
             expect(getSnapValues(50, 10, 20)).toEqual({
-                snapX: 10,
-                snapY: 20,
+                x: 10,
+                y: 20,
             });
         });
 
-        it('gets snapX from snapTo', () => {
+        it('gets snapXTo from snapTo', () => {
             expect(getSnapValues(50, undefined, 20)).toEqual({
-                snapX: 50,
-                snapY: 20,
+                x: 50,
+                y: 20,
             });
         });
 
-        it('gets snapY from snapTo', () => {
+        it('gets snapYTo from snapTo', () => {
             expect(getSnapValues(50, 10)).toEqual({
-                snapX: 10,
-                snapY: 50,
+                x: 10,
+                y: 50,
             });
         });
     });

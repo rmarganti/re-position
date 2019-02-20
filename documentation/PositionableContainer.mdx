@@ -99,8 +99,8 @@ example project is [available here on CodeSandbox](https://codesandbox.io/s/wpkw
     <PositionableContainer
         Element="span"
         movable
-        snapX={50}
-        snapY={100}
+        snapXTo={50}
+        snapYTo={100}
         resizable="both"
         rotatable
         position={{
@@ -122,14 +122,14 @@ example project is [available here on CodeSandbox](https://codesandbox.io/s/wpkw
                 textShadow: '2px 2px 5px rgba(0, 0, 0, 0.5)',
             }}
         >
-            snapX: 50, snapY: 100
+            snapXTo: 50, snapYTo: 100
         </p>
     </PositionableContainer>
 
     <PositionableContainer
         Element="span"
         movable
-        snapX={0}
+        snapXTo={0}
         resizable="both"
         rotatable
         position={{
@@ -151,14 +151,14 @@ example project is [available here on CodeSandbox](https://codesandbox.io/s/wpkw
                 textShadow: '2px 2px 5px rgba(0, 0, 0, 0.5)',
             }}
         >
-            snapX: 0
+            snapXTo: 0
         </p>
     </PositionableContainer>
 
     <PositionableContainer
         Element="span"
         movable
-        snapY={0}
+        snapYTo={0}
         resizable="both"
         rotatable
         position={{
@@ -180,9 +180,10 @@ example project is [available here on CodeSandbox](https://codesandbox.io/s/wpkw
                 textShadow: '2px 2px 5px rgba(0, 0, 0, 0.5)',
             }}
         >
-            snapY: 0
+            snapYTo: 0
         </p>
     </PositionableContainer>
+
 </Playground>
 
 ## Props

@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 ### Added
-- `snapX` and `snapY` in combination with `snapTo`. This supports restriction on dragging and resizing horizontally (snapY === 0), or vertically (snapX === 0)
+- `snapXTo` and `snapYTo` options to independently control
+  horizontal and vertical snapping.
 
 ## [0.4.1] - 2019-02-11
 ### Changed
