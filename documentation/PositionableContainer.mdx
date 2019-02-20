@@ -58,6 +58,134 @@ example project is [available here on CodeSandbox](https://codesandbox.io/s/wpkw
     </PositionableContainer>
 </Playground>
 
+<Playground
+    style={{
+        backgroundColor: '#f0f0f0',
+        height: '400px',
+        overflow: 'hidden',
+        position: 'relative',
+        transformOrigin: '0 0',
+    }}
+>
+    <PositionableContainer
+        Element="span"
+        movable
+        snapTo={50}
+        resizable="both"
+        rotatable
+        position={{
+            left: '0%',
+            top: '20%',
+            height: '20%',
+            width: '20%',
+            rotation: '0deg',
+        }}
+        style={{
+            backgroundImage: 'url(https://picsum.photos/500/300)',
+            backgroundPosition: 'center',
+            backgroundSize: 'cover',
+        }}
+    >
+        <p
+            style={{
+                color: '#fff',
+                textShadow: '2px 2px 5px rgba(0, 0, 0, 0.5)',
+            }}
+        >
+            snapTo: 50
+        </p>
+    </PositionableContainer>
+
+    <PositionableContainer
+        Element="span"
+        movable
+        snapXTo={50}
+        snapYTo={100}
+        resizable="both"
+        rotatable
+        position={{
+            left: '20%',
+            top: '30%',
+            height: '20%',
+            width: '20%',
+            rotation: '0deg',
+        }}
+        style={{
+            backgroundImage: 'url(https://picsum.photos/500/300)',
+            backgroundPosition: 'center',
+            backgroundSize: 'cover',
+        }}
+    >
+        <p
+            style={{
+                color: '#fff',
+                textShadow: '2px 2px 5px rgba(0, 0, 0, 0.5)',
+            }}
+        >
+            snapXTo: 50, snapYTo: 100
+        </p>
+    </PositionableContainer>
+
+    <PositionableContainer
+        Element="span"
+        movable
+        snapXTo={0}
+        resizable="both"
+        rotatable
+        position={{
+            left: '40%',
+            top: '40%',
+            height: '20%',
+            width: '20%',
+            rotation: '0deg',
+        }}
+        style={{
+            backgroundImage: 'url(https://picsum.photos/500/300)',
+            backgroundPosition: 'center',
+            backgroundSize: 'cover',
+        }}
+    >
+        <p
+            style={{
+                color: '#fff',
+                textShadow: '2px 2px 5px rgba(0, 0, 0, 0.5)',
+            }}
+        >
+            snapXTo: 0
+        </p>
+    </PositionableContainer>
+
+    <PositionableContainer
+        Element="span"
+        movable
+        snapYTo={0}
+        resizable="both"
+        rotatable
+        position={{
+            left: '60%',
+            top: '50%',
+            height: '20%',
+            width: '20%',
+            rotation: '0deg',
+        }}
+        style={{
+            backgroundImage: 'url(https://picsum.photos/500/300)',
+            backgroundPosition: 'center',
+            backgroundSize: 'cover',
+        }}
+    >
+        <p
+            style={{
+                color: '#fff',
+                textShadow: '2px 2px 5px rgba(0, 0, 0, 0.5)',
+            }}
+        >
+            snapYTo: 0
+        </p>
+    </PositionableContainer>
+
+</Playground>
+
 ## Props
 
 <PropsTable of={PositionableContainer} />

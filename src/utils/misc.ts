@@ -69,22 +69,23 @@ export const convertOffsetToPercentOrPixels = (
           };
 
 /**
- * Snap/Restrict all of an object's numeric
- * values to multiple of a number.
+ * Round all position properties (left, top, width, height)
+ * to an interval of the appropriate snap value.
  */
-export const snapObjectValues = (snapTo?: number) => <T extends {}>(
+export const snapPositionValues = (snapValues: SnapValues) => <T extends {}>(
     input: T
 ): T => {
-    if (!snapTo) {
+    if (areBothSnapsUndefined(snapValues)) {
         return input;
     }
 
     return Object.keys(input).reduce(
         (carrier, key) => {
             const inputValue = input[key];
+            const snapValue = assignSnapToKey(key, snapValues);
             const outputValue =
-                typeof inputValue === 'number'
-                    ? round(inputValue, snapTo)
+                typeof snapValue === 'number' && typeof inputValue === 'number'
+                    ? round(inputValue, snapValue)
                     : inputValue;
 
             return Object.assign({}, carrier, {
@@ -94,6 +95,47 @@ export const snapObjectValues = (snapTo?: number) => <T extends {}>(
         {} as T
     );
 };
+
+/**
+ * Assign snapXTo or snapYTo appropriately to a position key.
+ */
+export const assignSnapToKey = (key: string, snapValues: SnapValues) => {
+    switch (key) {
+        case 'left':
+            return snapValues.x;
+        case 'width':
+            return snapValues.x;
+        case 'top':
+            return snapValues.y;
+        case 'height':
+            return snapValues.y;
+        default:
+            return undefined;
+    }
+};
+
+/**
+ * Check if both snap dimension are not defined.
+ */
+export const areBothSnapsUndefined = (snapValues: SnapValues) =>
+    snapValues.x === undefined && snapValues.y === undefined;
+
+/**
+ * Consolidate `snapTo`, `snapXTo`, and `snapYTo`
+ * values into single `x` and `y` values.
+ */
+export interface SnapValues {
+    x?: number;
+    y?: number;
+}
+export const getSnapValues = (
+    snapTo?: number,
+    snapXTo?: number,
+    snapYTo?: number
+): SnapValues => ({
+    x: snapXTo === undefined ? snapTo : snapXTo,
+    y: snapYTo === undefined ? snapTo : snapYTo,
+});
 
 interface ObservableConfig {
     refHandlerName: string;

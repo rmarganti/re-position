@@ -51,14 +51,28 @@ export interface PositionableProps {
     /** Render Prop alternative to using `children` */
     render?: RenderCallback;
 
-    /** Snap drag and resize to pixels of this interval. */
-    snapTo?: number;
-
     /** Should resizing be enabled? */
     resizable?: boolean;
 
     /** Should rotation be enabled? */
     rotatable?: boolean;
+
+    /** Snap drag and resize to pixels of this interval. */
+    snapTo?: number;
+
+    /**
+     * Snap horizontal drag and resize to pixels of this interval
+     * (overwrites snapTo for horizontal values). Setting this value
+     * to `0` disables horizontal changes.
+     */
+    snapXTo?: number;
+
+    /**
+     * Snap vertical drag and resize to pixels of this interval
+     * (overwrites snapTo for vertical values). Setting this value
+     * to `0` disables vertical changes.
+     */
+    snapYTo?: number;
 }
 
 type RenderCallback = (args: RenderCallbackArgs) => JSX.Element;
@@ -179,6 +193,8 @@ export class Positionable extends React.Component<
             resizable,
             rotatable,
             snapTo,
+            snapXTo,
+            snapYTo,
         } = this.props;
         const { left, width } = this.state;
         const group = this.props.group || randomString();
@@ -201,6 +217,8 @@ export class Positionable extends React.Component<
                     this.refHandlers.dnd.current ||
                     this.refHandlers.container.current,
                 snapTo,
+                snapXTo,
+                snapYTo,
             })
                 .pipe(takeUntil(this.destroy$))
                 .subscribe();
@@ -245,6 +263,8 @@ export class Positionable extends React.Component<
                     left: config.left,
                     shouldConvertToPercent: width.includes('%'),
                     snapTo,
+                    snapXTo,
+                    snapYTo,
                 })
                     .pipe(takeUntil(this.destroy$))
                     .subscribe(newPosition => this.setState(newPosition));

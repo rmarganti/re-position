@@ -3,7 +3,12 @@ import { filter, map, skipWhile, switchMap, tap } from 'rxjs/operators';
 
 import { Offset, OffsetNumbers } from '../types';
 import { offsetOfElement, scaleOfElement } from '../utils/dom';
-import { snapObjectValues } from '../utils/misc';
+import {
+    areBothSnapsUndefined,
+    getSnapValues,
+    snapPositionValues,
+    SnapValues,
+} from '../utils/misc';
 import { allMoveEnd$, allMoveStart$, allMoveUpdate$ } from './allMove';
 import {
     documentMouseMove$,
@@ -22,8 +27,14 @@ interface DndObservableOptions {
     // HTML element used as a target for mouse interactions.
     handle: HTMLElement;
 
-    // Round values to an interval of this number.
+    // Round position values to an interval of this number.
     snapTo?: number;
+
+    // Round `left` value to an interval of this number.
+    snapXTo?: number;
+
+    // Round `top` value to an interval of this number.
+    snapYTo?: number;
 }
 
 /**
@@ -35,6 +46,8 @@ export const createDndObservable = ({
     group,
     handle,
     snapTo,
+    snapXTo,
+    snapYTo,
 }: DndObservableOptions): Observable<Offset> => {
     const mouseDown$ = fromEvent(handle, 'mousedown');
 
@@ -50,10 +63,13 @@ export const createDndObservable = ({
             // Account for CSS transform scale
             const scale = scaleOfElement(element);
 
+            // consolidate snap values from snapTo, snapXTo, snapYTo
+            const snapValues = getSnapValues(snapTo, snapXTo, snapYTo);
+
             const move$ = documentMouseMove$.pipe(
                 map(changeFromPointToMouseEvent(e.clientX, e.clientY, scale)),
                 skipWhile(hasntMovedFivePixels),
-                map(adjustForSnap(originalOffset, snapTo)),
+                map(adjustForSnap(originalOffset, snapValues)),
                 tap(notifyListeners(group))
             );
 
@@ -123,10 +139,10 @@ const hasntMovedFivePixels = (change: OffsetNumbers) =>
  * only the element that is being interacted with via mouse
  * will snap, with all other elements simply following along.
  */
-const adjustForSnap = (original: OffsetNumbers, snapTo?: number) => (
+const adjustForSnap = (original: OffsetNumbers, snapValues: SnapValues) => (
     change: OffsetNumbers
 ): OffsetNumbers => {
-    if (!snapTo) {
+    if (areBothSnapsUndefined(snapValues)) {
         return change;
     }
 
@@ -135,7 +151,7 @@ const adjustForSnap = (original: OffsetNumbers, snapTo?: number) => (
         top: original.top + change.top,
     };
 
-    const snapped = snapObjectValues(snapTo)(unsnappedOffset);
+    const snapped = snapPositionValues(snapValues)(unsnappedOffset);
 
     const adjustedChange = {
         left: snapped.left - original.left,
