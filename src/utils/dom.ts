@@ -83,10 +83,15 @@ export const globalTransformationMatrixOfElement = (
     return tM;
 };
 
+// Identity Matrix. Applying this results in no transformations.
+const IDENTITY_MATRIX_STRING = 'matrix(1, 0, 0, 1, 0, 0)';
+
 /*
  * Cross browser way to get the current transformation matrix of an Element.
  */
-const transformationMatrixStringOfElement = (element: HTMLElement): string => {
+export const transformationMatrixStringOfElement = (
+    element: HTMLElement
+): string => {
     const style = window.getComputedStyle(element, null);
 
     const result =
@@ -94,11 +99,11 @@ const transformationMatrixStringOfElement = (element: HTMLElement): string => {
         style.getPropertyValue('-moz-transform') ||
         style.getPropertyValue('-ms-transform') ||
         style.getPropertyValue('-o-transform') ||
-        style.getPropertyValue('transform');
+        style.getPropertyValue('transform') ||
+        IDENTITY_MATRIX_STRING;
 
     if (result === 'none') {
-        // Identity matrix.
-        return 'matrix(1, 0, 0, 1, 0, 0)';
+        return IDENTITY_MATRIX_STRING;
     }
 
     return result;
