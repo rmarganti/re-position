@@ -7,7 +7,12 @@ import {
 } from 'transformation-matrix';
 
 import { OffsetAndSizeNumbers } from '../types';
-import { rotationOfElement, scaleOfElement, visualCorners } from './dom';
+import {
+    rotationOfElement,
+    scaleOfElement,
+    transformationMatrixStringOfElement,
+    visualCorners,
+} from './dom';
 
 describe('utils/dom', () => {
     describe('rotationOfElement()', () => {
@@ -127,6 +132,15 @@ describe('utils/dom', () => {
             expect(allPositiveCorners.se).toEqual({ x: 10, y: 30 });
             expect(allPositiveCorners.sw).toEqual({ x: 10, y: 10 });
             expect(allPositiveCorners.nw).toEqual({ x: 30, y: 10 });
+        });
+    });
+
+    describe('transformationMatrixStringOfElement()', () => {
+        it('returns the identity matrix when a `transform` has not been set', () => {
+            const element = document.createElement('div');
+            const tmString = transformationMatrixStringOfElement(element);
+
+            expect(tmString).toEqual('matrix(1, 0, 0, 1, 0, 0)');
         });
     });
 });
