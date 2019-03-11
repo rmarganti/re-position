@@ -56,7 +56,7 @@ export class TransformBox extends React.Component<
         return (
             <Root
                 {...rest}
-                innerRef={refHandlers.container}
+                innerRef={refHandlers.dnd}
                 scale={scale}
                 style={{
                     ...style,

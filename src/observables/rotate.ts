@@ -28,7 +28,7 @@ export const createRotateObservable = ({
     handle,
     onComplete,
 }: RotateObservableOptions): Observable<RotationNumber> => {
-    const mouseDown$ = fromEvent(handle, 'mousedown');
+    const mouseDown$ = fromEvent<MouseEvent>(handle, 'mousedown');
 
     return mouseDown$.pipe(
         filter((e: MouseEvent) => e.which === 1), // left clicks only
