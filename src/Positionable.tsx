@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Subject } from 'rxjs';
-
 import { takeUntil } from 'rxjs/operators';
+
 import {
     createAllMoveObservable,
     createDndObservable,
@@ -9,6 +9,7 @@ import {
     createResizeObservable,
     createRotateObservable,
 } from './observables';
+import { createClickObservable } from './observables/click';
 import { Position } from './types';
 import {
     calculateResizeObservableConfigs,
@@ -41,6 +42,13 @@ export interface PositionableProps {
 
     /** Should moving be enabled? */
     movable?: boolean;
+
+    /**
+     * Click event handler. If a `dnd` ref exists, it will used to track
+     * the click events. Otherwise, the `container` ref will be used. This
+     * is a native DOM event, not a React synthetic event.
+     */
+    onClick?: (e: MouseEvent) => void;
 
     /** Callback to notify when Positioning has changed */
     onUpdate?: (sizing: Position) => void;
@@ -190,6 +198,7 @@ export class Positionable extends React.Component<
             disabled,
             disableKeyboardMovement,
             movable,
+            onClick,
             resizable,
             rotatable,
             snapTo,
@@ -201,11 +210,23 @@ export class Positionable extends React.Component<
 
         this.destroy$.next();
 
-        if (disabled) {
+        // We need, at the bare minimum, a `container` ref.
+        if (!this.refHandlers.container.current) {
             return;
         }
 
-        if (!this.refHandlers.container.current) {
+        if (onClick) {
+            createClickObservable({
+                element:
+                    this.refHandlers.dnd.current ||
+                    this.refHandlers.container.current,
+            })
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(onClick);
+        }
+
+        // If `disabled`, only the click observable will be created.
+        if (disabled) {
             return;
         }
 

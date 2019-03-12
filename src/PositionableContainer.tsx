@@ -30,6 +30,13 @@ export interface PositionableContainerProps {
     /** Should moving be enabled? */
     movable?: boolean;
 
+    /**
+     * Click event handler. If a `dnd` ref exists, it will used to track
+     * the click events. Otherwise, the `container` ref will be used. This
+     * is a native DOM event, not a React synthetic event.
+     */
+    onClick?: (e: MouseEvent) => void;
+
     /** Callback to notify when Positioning has changed */
     onUpdate?: (position: Position) => void;
 
@@ -75,6 +82,7 @@ export const PositionableContainer: React.SFC<PositionableContainerProps> = ({
     Element = 'div',
     group,
     movable,
+    onClick,
     onUpdate,
     position,
     render,
@@ -91,6 +99,7 @@ export const PositionableContainer: React.SFC<PositionableContainerProps> = ({
         disableKeyboardMovement={disableKeyboardMovement}
         group={group}
         movable={movable}
+        onClick={onClick}
         onUpdate={onUpdate}
         position={position}
         resizable={!!resizable}
@@ -101,6 +110,7 @@ export const PositionableContainer: React.SFC<PositionableContainerProps> = ({
         render={({ renderedPosition, refHandlers }) => (
             <React.Fragment>
                 <Element
+                    ref={refHandlers.container}
                     style={{
                         ...style,
                         height: `${renderedPosition.height}`,

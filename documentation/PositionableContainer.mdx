@@ -4,9 +4,8 @@ route: /positionable-container
 order: 5
 ---
 
-import { PropsTable } from 'docz';
+import { Playground, PropsTable } from 'docz';
 import PositionableContainer from '../src/PositionableContainer';
-import Playground from './PatchedPlayground';
 
 # PositionableContainer
 
@@ -30,6 +29,7 @@ example project is [available here on CodeSandbox](https://codesandbox.io/s/wpkw
     <PositionableContainer
         Element="span"
         movable
+        onClick={() => alert('click!')}
         resizable="both"
         rotatable
         position={{
