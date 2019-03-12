@@ -35,5 +35,6 @@ deploy:
       keep-history: true
       local-dir: .docz/dist
       on:
+          branch: master
           tags: true
           repo: rmarganti/re-position
