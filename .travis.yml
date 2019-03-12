@@ -15,6 +15,17 @@ deploy:
       email: $NPM_EMAIL
       api_key: $NPM_TOKEN
       on:
+          branch: master
+          tags: true
+          repo: rmarganti/re-position
+
+    - provider: npm
+      skip-cleanup: true
+      email: $NPM_EMAIL
+      api_key: $NPM_TOKEN
+      tag: next
+      on:
+          branch: next
           tags: true
           repo: rmarganti/re-position
 
