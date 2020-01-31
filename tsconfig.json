@@ -19,7 +19,8 @@
         "noUnusedLocals": true,
         "declaration": true,
         "allowSyntheticDefaultImports": true,
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "skipLibCheck": true
     },
     "include": ["src/**/*"],
     "exclude": ["node_modules", "lib", "scripts"]

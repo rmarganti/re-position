@@ -7,7 +7,6 @@ export interface ResizeHandleProps
     bottom?: boolean;
     color?: string;
     hidden?: boolean;
-    innerRef?: React.RefObject<HTMLElement>;
     left?: boolean;
     right?: boolean;
     rotation?: number;

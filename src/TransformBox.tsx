@@ -56,7 +56,7 @@ export class TransformBox extends React.Component<
         return (
             <Root
                 {...rest}
-                innerRef={refHandlers.dnd}
+                ref={refHandlers.dnd}
                 scale={scale}
                 style={{
                     ...style,
@@ -73,7 +73,7 @@ export class TransformBox extends React.Component<
                     ).map(resizablePosition => (
                         <ResizeHandle
                             key={resizablePosition.refHandlerName}
-                            innerRef={
+                            ref={
                                 refHandlers[resizablePosition.refHandlerName]
                             }
                             top={resizablePosition.top}
@@ -89,7 +89,7 @@ export class TransformBox extends React.Component<
                         rotatablePosition => (
                             <RotateHandle
                                 key={rotatablePosition.refHandlerName}
-                                innerRef={
+                                ref={
                                     refHandlers[
                                         rotatablePosition.refHandlerName
                                     ]

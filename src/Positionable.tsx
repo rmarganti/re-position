@@ -101,23 +101,23 @@ export class Positionable extends React.Component<
     public readonly state: PositionableState;
 
     private refHandlers = {
-        container: React.createRef<HTMLElement>(),
+        container: React.createRef<any>(),
 
-        dnd: React.createRef<HTMLElement>(),
+        dnd: React.createRef<any>(),
 
-        neRotate: React.createRef<HTMLElement>(),
-        seRotate: React.createRef<HTMLElement>(),
-        swRotate: React.createRef<HTMLElement>(),
-        nwRotate: React.createRef<HTMLElement>(),
+        neRotate: React.createRef<any>(),
+        seRotate: React.createRef<any>(),
+        swRotate: React.createRef<any>(),
+        nwRotate: React.createRef<any>(),
 
-        nResize: React.createRef<HTMLElement>(),
-        neResize: React.createRef<HTMLElement>(),
-        eResize: React.createRef<HTMLElement>(),
-        seResize: React.createRef<HTMLElement>(),
-        sResize: React.createRef<HTMLElement>(),
-        swResize: React.createRef<HTMLElement>(),
-        wResize: React.createRef<HTMLElement>(),
-        nwResize: React.createRef<HTMLElement>(),
+        nResize: React.createRef<any>(),
+        neResize: React.createRef<any>(),
+        eResize: React.createRef<any>(),
+        seResize: React.createRef<any>(),
+        sResize: React.createRef<any>(),
+        swResize: React.createRef<any>(),
+        wResize: React.createRef<any>(),
+        nwResize: React.createRef<any>(),
     };
 
     private destroy$ = new Subject<void>();
