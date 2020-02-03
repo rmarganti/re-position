@@ -3,6 +3,9 @@ language: node_js
 node_js:
     - '11.10.1'
 
+os:
+    - linux
+
 cache: yarn
 
 script:
@@ -11,19 +14,17 @@ script:
 
 deploy:
     - provider: npm
-      skip-cleanup: true
       email: $NPM_EMAIL
-      api_key: $NPM_TOKEN
+      api_token: $NPM_TOKEN
       on:
           branch: master
           tags: true
           repo: rmarganti/re-position
 
     - provider: pages
-      skip-cleanup: true
-      github-token: $GH_TOKEN
-      keep-history: true
-      local-dir: .docz/dist
+      token: $GH_TOKEN
+      keep_history: true
+      local_dir: .docz/dist
       on:
           branch: master
           tags: true
