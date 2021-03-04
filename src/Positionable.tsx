@@ -29,7 +29,7 @@ export interface PositionableProps {
     disabled?: boolean;
 
     /**
-     * By default, if `movable` is `true`, both mouse and keyboard movement
+     * By default, if `movable` is `true`, both pointer and keyboard movement
      * are enabled. This prop allows keyboard-based movement to be disabled.
      */
     disableKeyboardMovement?: boolean;
@@ -48,7 +48,7 @@ export interface PositionableProps {
      * the click events. Otherwise, the `container` ref will be used. This
      * is a native DOM event, not a React synthetic event.
      */
-    onClick?: (e: MouseEvent) => void;
+    onClick?: (e: PointerEvent) => void;
 
     /** Callback to notify when Positioning has changed */
     onUpdate?: (sizing: Position) => void;

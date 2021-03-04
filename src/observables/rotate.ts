@@ -5,8 +5,8 @@ import { RotationNumber } from '../types';
 import { rotationOfElement } from '../utils/dom';
 import { angleBetweenPoints, round } from '../utils/misc';
 import {
-    documentMouseMove$,
-    documentMouseUp$,
+    documentPointerMove$,
+    documentPointerUp$,
     requestAnimationFramesUntil,
 } from './misc';
 
@@ -28,11 +28,11 @@ export const createRotateObservable = ({
     handle,
     onComplete,
 }: RotateObservableOptions): Observable<RotationNumber> => {
-    const mouseDown$ = fromEvent<MouseEvent>(handle, 'mousedown');
+    const pointerDown$ = fromEvent<PointerEvent>(handle, 'pointerdown');
 
-    return mouseDown$.pipe(
-        filter((e: MouseEvent) => e.which === 1), // left clicks only
-        switchMap((e: MouseEvent) => {
+    return pointerDown$.pipe(
+        filter((e: PointerEvent) => e.which === 1), // left clicks only
+        switchMap((e: PointerEvent) => {
             e.preventDefault();
             e.stopPropagation();
 
@@ -49,13 +49,13 @@ export const createRotateObservable = ({
             const initialAngle =
                 angleFromAxis(e.clientX, e.clientY) - currentRotation;
 
-            const rotate$ = documentMouseMove$.pipe(
+            const rotate$ = documentPointerMove$.pipe(
                 map(translateRotation(angleFromAxis, initialAngle))
             );
 
             return requestAnimationFramesUntil(
                 rotate$,
-                documentMouseUp$,
+                documentPointerUp$,
                 onComplete
             );
         })
@@ -69,13 +69,13 @@ export const createRotateObservable = ({
 type AngleFromPointCalculator = (x: number, y: number) => number;
 
 /**
- * Calculate the final rotation based on the mouse's angle from
+ * Calculate the final rotation based on the pointer's angle from
  * the center axis and original rotation of the html element.
  */
 const translateRotation = (
     angleCalculator: AngleFromPointCalculator,
     initialAngle: number
-) => (e: MouseEvent): RotationNumber => {
+) => (e: PointerEvent): RotationNumber => {
     const interval = e.shiftKey ? 15 : 0.1;
 
     const angle = round(

@@ -29,8 +29,8 @@ import {
     snapPositionValues,
 } from '../utils/misc';
 import {
-    documentMouseMove$,
-    documentMouseUp$,
+    documentPointerMove$,
+    documentPointerUp$,
     requestAnimationFramesUntil,
     shiftIsPressed$,
 } from './misc';
@@ -50,7 +50,7 @@ interface ResizeObservableOptions {
 }
 
 /*
- * Create an Obvservable that enables resizing an HTML element
+ * Create an Observable that enables resizing an HTML element
  * and emits a stream of updated size.
  *
  * @param element HTML Element for which to enable resizing
@@ -69,11 +69,11 @@ export const createResizeObservable = ({
     bottom,
     left,
 }: ResizeObservableOptions): Observable<OffsetAndSize> => {
-    const mouseDown$ = fromEvent<MouseEvent>(handle, 'mousedown');
+    const pointerDown$ = fromEvent<PointerEvent>(handle, 'pointerdown');
 
-    return mouseDown$.pipe(
-        filter((e: MouseEvent) => e.which === 1), // left clicks only
-        switchMap((e: MouseEvent) => {
+    return pointerDown$.pipe(
+        filter((e: PointerEvent) => e.which === 1), // left clicks only
+        switchMap((e: PointerEvent) => {
             e.preventDefault();
             e.stopPropagation();
 
@@ -84,9 +84,9 @@ export const createResizeObservable = ({
 
             const snapValues = getSnapValues(snapTo, snapXTo, snapYTo);
 
-            const move$ = documentMouseMove$.pipe(
+            const move$ = documentPointerMove$.pipe(
                 map(
-                    angleAndDistanceFromPointToMouseEvent(
+                    angleAndDistanceFromPointToPointerEvent(
                         e.clientX,
                         e.clientY,
                         scale
@@ -131,7 +131,7 @@ export const createResizeObservable = ({
 
             return requestAnimationFramesUntil(
                 move$,
-                documentMouseUp$,
+                documentPointerUp$,
                 onComplete
             );
         })
@@ -139,13 +139,13 @@ export const createResizeObservable = ({
 };
 
 /**
- * Calculates the distance from an origin point to a mouse event
+ * Calculates the distance from an origin point to a pointer event.
  */
-const angleAndDistanceFromPointToMouseEvent = (
+const angleAndDistanceFromPointToPointerEvent = (
     originX: number,
     originY: number,
     scale: number
-) => (e: MouseEvent): AngleAndDistanceNumbers => ({
+) => (e: PointerEvent): AngleAndDistanceNumbers => ({
     angle: angleBetweenPoints(originX, originY)(e.clientX, e.clientY),
     distance:
         distanceBetweenPoints(originX, originY)(e.clientX, e.clientY) / scale,

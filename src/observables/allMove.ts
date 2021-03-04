@@ -81,7 +81,7 @@ const translateMovementToPosition = (
     );
 
 /**
- * Add the change in mouse position to an origin point.
+ * Add the change in pointer position to an origin point.
  */
 const addOffsets = (origin: OffsetNumbers) => (change: OffsetNumbers) => ({
     left: origin.left + change.left,

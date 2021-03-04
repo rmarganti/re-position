@@ -7,7 +7,7 @@ import {
     takeUntil,
     tap,
 } from 'rxjs/operators';
-import { documentMouseMove$, documentMouseUp$ } from './misc';
+import { documentPointerMove$, documentPointerUp$ } from './misc';
 
 interface ClickObservableOptions {
     // HTML element used as a basis for all calculations.
@@ -17,24 +17,24 @@ interface ClickObservableOptions {
 /**
  * Create a click event listener for an element. Because actual click events
  * may be problematic for our other observables, this observable is based off
- * of `mousedown`, `mousemove`, and `mouseup` events. Therefore, the emitted
- * value is the element's `mousedown` event, not a `click` event.
+ * of `pointerdown`, `pointermove`, and `pointerup` events. Therefore, the emitted
+ * value is the element's `pointerdown` event, not a `click` event.
  */
 export const createClickObservable = ({
     element,
-}: ClickObservableOptions): Observable<MouseEvent> => {
-    const mouseDown$ = fromEvent<MouseEvent>(element, 'mousedown');
+}: ClickObservableOptions): Observable<PointerEvent> => {
+    const pointerDown$ = fromEvent<PointerEvent>(element, 'pointerdown');
 
-    return mouseDown$.pipe(
-        concatMap(mouseDownEvent =>
-            documentMouseUp$.pipe(
+    return pointerDown$.pipe(
+        concatMap(pointerDownEvent =>
+            documentPointerUp$.pipe(
                 first(),
-                takeUntil(documentMouseMove$.pipe(elementAt(3))),
+                takeUntil(documentPointerMove$.pipe(elementAt(3))),
                 tap(e => {
                     e.stopPropagation();
                     e.preventDefault();
                 }),
-                mapTo(mouseDownEvent)
+                mapTo(pointerDownEvent)
             )
         )
     );

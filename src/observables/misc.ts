@@ -9,8 +9,8 @@ import {
     withLatestFrom,
 } from 'rxjs/operators';
 
-export const documentMouseMove$ = fromEvent<MouseEvent>(document, 'mousemove');
-export const documentMouseUp$ = fromEvent<MouseEvent>(document, 'mouseup');
+export const documentPointerMove$ = fromEvent<PointerEvent>(document, 'pointermove');
+export const documentPointerUp$ = fromEvent<PointerEvent>(document, 'pointerup');
 
 export const keyDowns$ = fromEvent<KeyboardEvent>(document, 'keydown');
 export const keyUps$ = fromEvent<KeyboardEvent>(document, 'keyup');

@@ -137,6 +137,7 @@ const Root = styled.div<RootProps>`
     border: ${props => props.scale}px dotted rgba(233, 30, 99, 0.5);
     position: absolute;
     z-index: 1000;
+    touch-action: none;
 `;
 
 export default TransformBox;

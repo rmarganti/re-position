@@ -11,8 +11,8 @@ import {
 } from '../utils/misc';
 import { allMoveEnd$, allMoveStart$, allMoveUpdate$ } from './allMove';
 import {
-    documentMouseMove$,
-    documentMouseUp$,
+    documentPointerMove$,
+    documentPointerUp$,
     requestAnimationFramesUntil,
 } from './misc';
 
@@ -24,7 +24,7 @@ interface DndObservableOptions {
     // group will respond to each others movements.
     group: string;
 
-    // HTML element used as a target for mouse interactions.
+    // HTML element used as a target for pointer interactions.
     handle: HTMLElement;
 
     // Round position values to an interval of this number.
@@ -49,12 +49,12 @@ export const createDndObservable = ({
     snapXTo,
     snapYTo,
 }: DndObservableOptions): Observable<Offset> => {
-    const mouseDown$ = fromEvent<MouseEvent>(handle, 'mousedown');
+    const pointerDown$ = fromEvent<PointerEvent>(handle, 'pointerdown');
 
-    return mouseDown$.pipe(
-        filter((e: MouseEvent) => e.which === 1), // left clicks only
+    return pointerDown$.pipe(
+        filter((e: PointerEvent) => e.which === 1), // left clicks only
         tap(allMoveStart$),
-        switchMap((e: MouseEvent) => {
+        switchMap((e: PointerEvent) => {
             e.preventDefault();
             e.stopPropagation();
 
@@ -66,14 +66,14 @@ export const createDndObservable = ({
             // consolidate snap values from snapTo, snapXTo, snapYTo
             const snapValues = getSnapValues(snapTo, snapXTo, snapYTo);
 
-            const move$ = documentMouseMove$.pipe(
-                map(changeFromPointToMouseEvent(e.clientX, e.clientY, scale)),
+            const move$ = documentPointerMove$.pipe(
+                map(changeFromPointToPointerEvent(e.clientX, e.clientY, scale)),
                 skipWhile(hasntMovedFivePixels),
                 map(adjustForSnap(originalOffset, snapValues)),
                 tap(notifyListeners(group))
             );
 
-            return requestAnimationFramesUntil(move$, documentMouseUp$, () =>
+            return requestAnimationFramesUntil(move$, documentPointerUp$, () =>
                 allMoveEnd$.next()
             );
         })
@@ -81,13 +81,13 @@ export const createDndObservable = ({
 };
 
 /**
- * Calculates the distance from an origin point to a mouse event
+ * Calculates the distance from an origin point to a pointer event.
  */
-const changeFromPointToMouseEvent = (
+const changeFromPointToPointerEvent = (
     originX: number,
     originY: number,
     scale: number
-) => (e: MouseEvent): OffsetNumbers => {
+) => (e: PointerEvent): OffsetNumbers => {
     const leftChange = (e.clientX - originX) / scale;
     const topChange = (e.clientY - originY) / scale;
 
@@ -125,7 +125,7 @@ const changeFromPointToMouseEvent = (
 };
 
 /**
- * Determine if the mouse has moved 5 pixels or more in any direction.
+ * Determine if the pointer has moved 5 pixels or more in any direction.
  * Change = √(a² + b²)
  */
 const hasntMovedFivePixels = (change: OffsetNumbers) =>
@@ -136,7 +136,7 @@ const hasntMovedFivePixels = (change: OffsetNumbers) =>
  * ends up in a position that is snapped to the given number.
  *
  * NOTE: If you have grouped elements (via the `group` param),
- * only the element that is being interacted with via mouse
+ * only the element that is being interacted with via pointer
  * will snap, with all other elements simply following along.
  */
 const adjustForSnap = (original: OffsetNumbers, snapValues: SnapValues) => (
@@ -162,8 +162,8 @@ const adjustForSnap = (original: OffsetNumbers, snapValues: SnapValues) => (
 };
 
 /**
- * Notify allMove observers that a change in mouse position
- * has occurred relative to the initial mouse-down offset.
+ * Notify allMove observers that a change in pointer position
+ * has occurred relative to the initial pointer-down offset.
  */
 const notifyListeners = (group: string) => (offset: OffsetNumbers) =>
     allMoveUpdate$.next({ group, offset });

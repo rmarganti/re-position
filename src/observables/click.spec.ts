@@ -5,33 +5,33 @@ import { createClickObservable } from './click';
 describe('click observable', () => {
     it('emits on element click', done => {
         const element = document.createElement('div');
-        const mouseDownEvent = new MouseEvent('mousedown');
-        const mouseUpEvent = new MouseEvent('mouseup');
+        const pointerDownEvent = new PointerEvent('pointerdown');
+        const pointerUpEvent = new PointerEvent('pointerup');
 
         createClickObservable({ element }).subscribe(e => {
             expect(e.target).toEqual(element);
-            expect(e.type).toEqual('mousedown');
+            expect(e.type).toEqual('pointerdown');
             done();
         });
 
-        // `mousedown` and `mouseup` with no `mousemove`
+        // `pointerdown` and `pointerup` with no `pointermove`
         // in between is interpreted as a click.
-        element.dispatchEvent(mouseDownEvent);
-        document.dispatchEvent(mouseUpEvent);
+        element.dispatchEvent(pointerDownEvent);
+        document.dispatchEvent(pointerUpEvent);
     });
 
     it("doesn't emit when dragging", done => {
         const element = document.createElement('div');
-        const mouseDownEvent = new MouseEvent('mousedown');
-        const mouseMoveEvent = new MouseEvent('mousemove');
-        const mouseUpEvent = new MouseEvent('mouseup');
+        const pointerDownEvent = new PointerEvent('pointerdown');
+        const pointerMoveEvent = new PointerEvent('pointermove');
+        const pointerUpEvent = new PointerEvent('pointerup');
 
         const stopListening$ = new Subject<void>();
 
         createClickObservable({ element })
             .pipe(takeUntil(stopListening$))
             .subscribe({
-                next: e => {
+                next: () => {
                     // Should not get here.
                     expect(false).toBeTruthy();
                     done();
@@ -39,15 +39,15 @@ describe('click observable', () => {
                 complete: () => done(),
             });
 
-        // `mousedown` and `mouseup` with multiple `mousemove`
+        // `pointerdown` and `pointerup` with multiple `pointermove`
         // in between is not considered a click. Likely, it is
         // a drag-and-drop interaction.
-        element.dispatchEvent(mouseDownEvent);
-        document.dispatchEvent(mouseMoveEvent);
-        document.dispatchEvent(mouseMoveEvent);
-        document.dispatchEvent(mouseMoveEvent);
-        document.dispatchEvent(mouseMoveEvent);
-        document.dispatchEvent(mouseUpEvent);
+        element.dispatchEvent(pointerDownEvent);
+        document.dispatchEvent(pointerMoveEvent);
+        document.dispatchEvent(pointerMoveEvent);
+        document.dispatchEvent(pointerMoveEvent);
+        document.dispatchEvent(pointerMoveEvent);
+        document.dispatchEvent(pointerUpEvent);
 
         stopListening$.next();
     });
